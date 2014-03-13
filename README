@@ -1,6 +1,13 @@
-The game [d0x3d!] is a non-digital game developed primarily for education 
-and STEM outreach. The digital materials for [d0x3d!] are released here, 
-as open-source products. These materials are of three forms:
+[d0x3d!] was created as a non-digital game for education. As a table top game it was entertaining, but any education around networks, privacy and security had to be provided by the teacher/game master. 
+
+By making an online version of [d0x3d!] I hope to achieve 2 things:
+1. Allow for the addtion of factual elements (ideally as part of the game play)
+2. Provide an engaging learning experince for my Certificate IV Web Development class at TasTAFE
+
+The web content can be found in the html directory. Background information, plans and tutorials for the design and coding can be found in the repository wiki (https://github.com/botheredbybees/d0x3d-the-game/wiki)
+
+The digital materials for the original [d0x3d!] card based game were released  
+as open-source products by the great folk at TableTopSecurity (https://github.com/TableTopSecurity). Those materials are in three forms:
 
 tgc-print
 =========
