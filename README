@@ -4,44 +4,78 @@ By making an online version of [d0x3d!] I hope to achieve 2 things:
 1. Allow for the addtion of factual elements (ideally as part of the game play)
 2. Provide an engaging learning experince for my Certificate IV Web Development class at TasTAFE
 
-The web content can be found in the html directory. Background information, plans and tutorials for the design and coding can be found in the repository wiki (https://github.com/botheredbybees/d0x3d-the-game/wiki)
+The web content can be found in the html directory. Background information, plans and tutorials for the design and coding can be found in the [repository wiki] (https://github.com/botheredbybees/d0x3d-the-game/wiki)
 
 The digital materials for the original [d0x3d!] card based game were released  
-as open-source products by the great folk at TableTopSecurity (https://github.com/TableTopSecurity). Those materials are in three forms:
+as open-source products by the great folk at TableTopSecurity (https://github.com/TableTopSecurity). The original materials can be found in the tabletop directory.
 
-tgc-print
+The web based version of the game is kept in the html directory, which contains the following areas:
+
+
+app
 =========
-Contains 300dpi PNG artwork, in a format appropriate to print using 
-The Game Crafter (http://thegamecrafter.com/), i.e. full-bleed artwork for 
-TGC print house.
+The development area, this is where we will be working on the new code. This contains all of the files for the actual web app. This is where you’ll find all of the HTML, JavaScript and CSS files. Also included in this folder is a bower_components directory. This includes all of the dependencies for the application, such as jQuery and Modernizr. You can add more Bower packages using the install command:
+
+bower install <package> --save-dev
 
 
-self-print
+test
 ==========
-Contains 300dpi PNG artwork, masked so it can be directly printed 
-and cut-out at home (no margins for cut or bleed).
+Test scrips written in [Mocha] (http://visionmedia.github.io/mocha/).
 
-The deck mixtures are as follows:
- * [patch!] deck: one of each card (24 total)
- * [hacker] deck: one of each card (6 total)
- * [lo0t!] deck: 28 cards total, in the following mixture:
-    - one of each honeypot and intrusion detected card (3 total)
-    - one of each zero-day exploit card (5 total)
-    - five of each digital asset share (20 total)
+The test directory contains the test setup for the app. The web app generator uses the Mocha test framework for testing JavaScript code. To run your tests you can simply use the test task defined in the Gruntfile.
 
-We recognize our self-print process is currently not very user-friendly.
-We are interested in improving it, and you might consider helping us.
+grunt test
+
+dist
+============
+Running grunt build takes the app/ source code files and turns them into a distributable application, which ends up in dist/.
+
+The dist/ folder is what you feed to your server. dist/ has it's own index.html, with references to minified and concatenated dist/scripts and dist/styles, and optimized dist/images.
+
+Behind the scenes, grunt build is a task that runs several sub-tasks. One of those is grunt-usemin, which looks for blocks inside of your app/index.html, like this:
+
+app/index.html
+
+<!-- build:js scripts/main.js -->
+<script src="bower_components/jquery/jquery.js"></script>
+<script src="scripts/main.js"></script>
+<!-- endbuild -->
+After your grunt build task completes, you will end up with this:
+
+dist/index.html
+
+<script src="scripts/c155266f.main.js"></script>
+
+Oh, one other thing. grunt build is actually wrapped inside of another task. Simply running grunt will execute the default task:
+
+grunt.registerTask('default', [
+    'jshint',
+    'test',
+    'build'
+]);
+
+Those first two tasks, jshint and test deserve a little more explanation.
+
+JSHint
+The jshint task will consult with your .jshintrc file to learn your preferences, then scan through all of your JS files to make sure your rules are abided by. To get the full run down of your options with JSHint, check the JSHint documentation.
+
+Test
+The test task looks like this:
+
+grunt.registerTask('test', [
+    'clean:server',
+    'coffee',
+    'createDefaultTemplate',
+    'jst',
+    'compass',
+    'connect:test',
+    'mocha'
+]);
+
+It basically does enough to create and serve the application for our test framework, Mocha, to execute our tests.
 
 
-masters
-=======
-The original Adobe Illustrator and Scribus files for generating the
-versions of the game art and rules booklet.
 
 
-contribs
-========
-User-contributed content.
-
-
-This work is covered under multiple licenses. See LICENSE for details.
+This work is covered under multiple licenses, mostly the Creative Commons BY-NC-SA-3.0 license, but some images are under other licenses. See the LICENSE file for details.
