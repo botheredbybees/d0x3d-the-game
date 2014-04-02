@@ -5,11 +5,10 @@
 <!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
     <head>
         <meta charset="utf-8">
-        <title>html</title>
+        <title>[d0x3d!]</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width">
         <link rel="shortcut icon" href="/favicon.ico">
-        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
         <!-- build:css styles/vendor.css -->
         <!-- bower:css -->
         <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
@@ -25,45 +24,135 @@
     </head>
     <body>
         <!--[if lt IE 10]>
-            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your user experience and reduce your risk.</p>
         <![endif]-->
 
 
-        <div class="container">
+        <div class="gamearea">
             <div class="header">
-                <ul class="nav nav-pills pull-right">
-                    <li class="active"><a href="#">Home</a></li>
-                    <li><a href="#">About</a></li>
-                    <li><a href="#">Contact</a></li>
-                </ul>
-                <h3 class="text-muted">html</h3>
+                <h1><span class="red">[</span>d0x3d!<span class="red">]</span></h1>
             </div>
 
-            <div class="jumbotron">
-                <h1>'Allo, 'Allo!</h1>
-                <p class="lead">Always a pleasure scaffolding your apps.</p>
-                <p><a class="btn btn-lg btn-success" href="#">Splendid! <span class="glyphicon glyphicon-ok"></span></a></p>
+            <div class="row hud">
+                <div class="col-md-4 col-md-offset-2">Infocon data here</div>
+                <div class="col-md-4">retrieved asset data here</div>
             </div>
 
-            <div class="row marketing">
-                <div class="col-lg-6">
-                    <h4>HTML5 Boilerplate</h4>
-                    <p>HTML5 Boilerplate is a professional front-end template for building fast, robust, and adaptable web apps or sites.</p>
-
-
-
-                    <h4>Bootstrap</h4>
-                    <p>Sleek, intuitive, and powerful mobile first front-end framework for faster and easier web development.</p>
-
-                    <h4>Modernizr</h4>
-                    <p>Modernizr is an open-source JavaScript library that helps you build the next generation of HTML5 and CSS3-powered websites.</p>
-
+            <div class="row">
+                <div class="col-md-10 col-md-offset-1" id="player3">
+                    <!-- cards for player 3 will be displayed here when we build the multi-player version -->
                 </div>
             </div>
 
-            <div class="footer">
-                <p><span class="glyphicon glyphicon-heart"></span> from the Yeoman team</p>
+            <div class="row">
+                <div class="col-md-1" id="player2">
+                    <!-- cards for player 2 will be displayed here when we build the multi-player version -->
+                </div>
+
+                <div class="col-md-10" id="tiles">
+                    <!-- tiles, lo0t and patch cards -->
+                    <div class="row" id="row1">
+                        <div class="col-sm-2" id="loot">
+                            <img src="img/backs/back_lo0t.png" class="img-responsive" width="240" height="176" alt="lo0t cards">
+                        </div>
+                        <div class="col-sm-2 col-sm-offset-2" id="tile1">
+                        </div>
+                        <div class="col-sm-2" id="tile2">
+                        </div>
+                        <div class="col-sm-2 col-sm-offset-2" id="patch">
+                            <img src="img/backs/back_patch.png" class="img-responsive" width="240" height="176" alt="patch cards">
+                        </div>
+                    </div>
+                    <div class="row" id="row2">
+                        <div class="col-sm-2 col-sm-offset-2" id="card3">
+                        </div>
+                        <div class="col-sm-2" id="tile4">
+                        </div>
+                        <div class="col-sm-2" id="tile4">
+                        </div>
+                        <div class="col-sm-2" id="tile6">
+                        </div>
+                    </div>
+                    <div class="row" id="row3">
+                        <div class="col-sm-2" id="card7">
+                        </div>
+                        <div class="col-sm-2" id="tile8">
+                        </div>
+                        <div class="col-sm-2" id="tile9">
+                        </div>
+                        <div class="col-sm-2" id="tile10">
+                        </div>
+                        <div class="col-sm-2" id="tile11">
+                        </div>
+                        <div class="col-sm-2" id="tile12">
+                        </div>
+                    </div>
+                    <div class="row" id="row4">
+                        <div class="col-sm-2" id="card13">
+                        </div>
+                        <div class="col-sm-2" id="tile14">
+                        </div>
+                        <div class="col-sm-2" id="tile15">
+                        </div>
+                        <div class="col-sm-2" id="tile16">
+                        </div>
+                        <div class="col-sm-2" id="tile17">
+                        </div>
+                        <div class="col-sm-2" id="tile18">
+                        </div>
+                    </div>
+                    <div class="row" id="row5">
+                        <div class="col-sm-2 col-sm-offset-2" id="card19">
+                            <img src="img/backs/back_lo0t.png" class="img-responsive" width="240" height="176" alt="lo0t cards">
+                        </div>
+                        <div class="col-sm-2" id="tile20">
+                        </div>
+                        <div class="col-sm-2" id="tile21">
+                        </div>
+                        <div class="col-sm-2" id="tile22">
+                        </div>
+                    </div>
+                    <div class="row" id="row6">
+                        <div class="col-sm-2 col-sm-offset-3" id="tile23">
+                        </div>
+                        <div class="col-sm-2" id="tile24">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-1" id="player4">
+                    <!-- cards for player 4 will be displayed here when we build the multi-player version -->
+                </div>
             </div>
+
+            <div id="player1">
+                <div class="row">
+                    <div class="col-md-1 col-md-offset-3" id="p1loot1">
+                    </div>
+                    <div class="col-md-1" id="p1loot2">
+                    </div>
+                    <div class="col-md-1" id="p1loot3">
+                    </div>
+                    <div class="col-md-1" id="p1loot4">
+                    </div>
+                    <div class="col-md-1" id="p1loot5">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-1 col-md-offset-3" id="p1loot6">
+                    </div>
+                    <div class="col-md-1" id="p1loot7">
+                    </div>
+                    <div class="col-md-1" id="p1loot8">
+                    </div>
+                    <div class="col-md-1" id="p1loot9">
+                    </div>
+                    <div class="col-md-1" id="p1loot10">
+                    </div>
+                </div>
+            </div>
+
+            
 
         </div>
 
