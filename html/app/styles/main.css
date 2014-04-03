@@ -94,23 +94,22 @@ body {
     padding-left: 0;
     padding-right: 0;
 }
-.thumb {
+.tile {
 display:block;
 width:240px;
 height:240px;
 position:relative;
-margin-bottom:20px;
 margin-right:20px;
 float:left;
 }
 
-.thumb-wrapper {
+.tile-wrapper {
     display:block;
     width:100%;
     height:100%;
 }
 
-.thumb img {
+.tile img {
     width:100%;
     height:100%;
     position:absolute;
@@ -118,7 +117,7 @@ float:left;
             
 }
 
-.thumb .thumb-detail {
+.tile .tile-detail {
     display:block;
     width:100%;
     height:100%;
@@ -129,7 +128,7 @@ float:left;
     font-size:16px;         
 }
 
-.thumb .thumb-detail a {
+.tile .tile-detail a {
     display:block;
     width:100%;
     height:100%;
@@ -146,11 +145,11 @@ float:left;
 /*
 * Without CSS3
 */
-.thumb.scroll {
+.tile.scroll {
 overflow: hidden;
 }   
 
-.thumb.scroll .thumb-detail {
+.tile.scroll .tile-detail {
     bottom:-280px;
 }
 
@@ -158,7 +157,7 @@ overflow: hidden;
 /*
 * CSS3 Flip
 */  
-.thumb.flip {
+.tile.flip {
 -webkit-perspective:800px;      
    -moz-perspective:800px;
     -ms-perspective:800px;              
@@ -166,7 +165,7 @@ overflow: hidden;
         perspective:800px;
 }
 
-.thumb.flip .thumb-wrapper {
+.tile.flip .tile-wrapper {
     -webkit-transition: -webkit-transform 1s;
        -moz-transition: -moz-transform 1s;
         -ms-transition: -moz-transform 1s;
@@ -179,7 +178,7 @@ overflow: hidden;
               transform-style: preserve-3d;         
 }
 
-.thumb.flip .thumb-detail {
+.tile.flip .tile-detail {
     -webkit-transform: rotateY(-180deg);
        -moz-transform: rotateY(-180deg);
         -ms-transform: rotateY(-180deg);
@@ -187,8 +186,8 @@ overflow: hidden;
             transform: rotateY(-180deg);                        
 }
 
-.thumb.flip img,
-.thumb.flip .thumb-detail {
+.tile.flip img,
+.tile.flip .tile-detail {
     -webkit-backface-visibility: hidden;
        -moz-backface-visibility: hidden;
         -ms-backface-visibility: hidden;
@@ -196,10 +195,13 @@ overflow: hidden;
             backface-visibility: hidden;
 }
 
-.thumb.flip .flipIt {
+.tile.flip .flipIt {
     -webkit-transform: rotateY(-180deg);
        -moz-transform: rotateY(-180deg);            
         -ms-transform: rotateY(-180deg);            
          -o-transform: rotateY(-180deg);            
             transform: rotateY(-180deg);            
+}
+.actions {
+	padding-left: 20%;
 }
