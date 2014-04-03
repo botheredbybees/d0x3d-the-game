@@ -41,4 +41,24 @@ $( document ).ready(function() {
         $('#tile'+(i+1)).find('img').attr('src','images/tiles/'+network[i].image+'.png');
         $('#tile'+(i+1)).find('img').attr('alt',network[i].name);
     }
+    if ($('html').hasClass('csstransforms3d')) {          
+        $('.thumb').removeClass('scroll').addClass('flip');     
+        $('.thumb.flip').hover(
+            function () {
+                $(this).find('.thumb-wrapper').addClass('flipIt');
+            },
+            function () {
+                $(this).find('.thumb-wrapper').removeClass('flipIt');           
+            }
+        );        
+    } else {
+        $('.thumb').hover(
+            function () {
+                $(this).find('.thumb-detail').stop().animate({bottom:0}, 500, 'easeOutCubic');
+            },
+            function () {
+                $(this).find('.thumb-detail').stop().animate({bottom: ($(this).height() * -1) }, 500, 'easeOutCubic');          
+            }
+        );
+    }
 });
