@@ -1,3 +1,9 @@
+
+var players = [];
+// set up the default board: a 6x6 array of 2, 4, 6, 6, 4, 2 cards
+// each element of the array has either a -1 (no tile) or a non-negative integer corresponding to the network array index corresponding to that node
+// for future versions there may be other layouts
+var board = [[-1,-1,0,1,-1,-1],[-1,2,3,4,5,-1],[6,7,8,9,10,11],[12,13,14,15,16,17],[-1,18,19,20,21,-1],[-1,-1,22,23,-1,-1]];
 function node(name,image,asset)
 {
     // make asset an optional argument as most tiles don't have one on them
@@ -8,8 +14,8 @@ function node(name,image,asset)
     this.image=image;
     this.compromised=false;
     this.loot=[]; // an array of loot cards dropped on this node (if any)
-	this.x; // position on the 6x6 board grid 
-	this.y;
+	this.x=0; // position on the 6x6 board grid 
+	this.y=0;
 	this.players = []; // array of players occupying this node
 }
 
@@ -76,7 +82,7 @@ function shuffle() {
 	network[10].x = 4;
 	network[10].y = 2;
 	network[11].x = 5;
-	network[11].y = 2;	
+	network[11].y = 2;
 	
 	network[12].x = 0;
 	network[12].y = 3;
@@ -108,82 +114,104 @@ function shuffle() {
 	// find the player start position in the grid
 	for(i=0;i<players.length;++i) {
 		for(var j=0; j<network.length;++j) {
-			if (network[j].name == players[i].character.startingNode) {
+			if (network[j].name === players[i].character.startingNode) {
 				//console.log('player'+i+' character is at the '+network[j].name);
 				players[i].currentNode = j;
+				players[i].xpos = network[j].x;
+				players[i].ypos = network[j].y;
 				network[j].compromised = true;
+				$('#icon'+i).attr('src','images/characters/icon_'+players[i].character.filestem+'.png');
+				//console.log('player'+i+' filestem is '+players[i].character.filestem);
+				$('#icon'+i).attr('alt',players[i].character.name);
+				$('#icon'+i).attr('height','50');
+				$('#icon'+i).attr('width','50');
+				//showplayer(i,network[j].x,network[j].y); // no point in doing this here since the initial tile drawing routine kills it
 			}
 		}
-	}	
+	}
+}
+
+function showplayer(playernum,xpos,ypos) {
+	// move the player to a new position on the board grid
+	var image = $('#icon'+playernum);
+	image.remove();
+	$("#"+xpos+ypos).append(image);
 }
 
 function resizeTiles() {
-	$( '.tile' ).each(function( index ) {
-	  $( this ).css('height',$(this).css('width'));
+	$( '.tile' ).each(function( ) {
+		$( this ).css('height',$(this).css('width'));
 	});
 }
 
-function character(name,description,start) {
+function character(name,description,start,filestem) {
 	this.name = name;
 	this.description = description;
 	this.startingNode = start;
+	this.filestem = filestem;
+
 }
 // in beta we're only having one player, who will be a social engineer. later we'll add more players and allow for selection of characters from the following list:
 var characters = new Array(
-new character('social engineer','A master of manipulation, the social engineer attacks the human factor of security. Why pick a lock when they\'ll open the door for anyone dressed like a delivery person? Why crack a login screen, when the dumpster may have crumpled-up passwords in it? Humans are part of the system, and you know how to hack them to get just about anywhere.','Internet Gateway'),
-new character('war driver','You use wireless to your advantage, gaining access from remote places. War driving is the act of methodically probing for wireless access points left unsecured, and you\'ve mapped out the whole city. Did you know that, from your favorite coffeeshop, a radio antenna at just the right angle gets you access to a network left  exposed on the top floor of the neighboring skyscraper? You do your mobile magic, long distance.','Wireless Router'),
-new character('the insider','If you want tobeat \'em, then join \'em! The malicious insider tears it apart from the inside, taking advantage of free access to the surrounding machines. Welcome to the company! The server room is down the hall.','VPN Gateway'),
-new character('botmaster','As a botmaster, you control hundreds - no, thousands - of machines all over the world, and you know how to use them all to dish it out, at scale. Your "zombies" share files, fire out spam, and launch denial of service attacks... all controlled by you.','Laptop Client'),
-new character('cryptanalyst','Crypto is hard to get right. You\'ve picked a much easier game: recognizing when it\'s done wrong. Weak keys, unsafe primes, corrupt certificate authorities: an expert of finesse, the cryptanalyst is adept at tackling hard problems from a slightly different angle.','VLAN Switch'),
-new character('malware writer','When it comes to viruses, trojan horses, and worms you\'re the best of the best. An artist, a maestro, a poet ... that is, if poems could stop a car or explode a pacemaker. Like a nasty cold, your malware spreads quickly across the network.','Primary DNS')
+new character('social engineer','A master of manipulation, the social engineer attacks the human factor of security. Why pick a lock when they\'ll open the door for anyone dressed like a delivery person? Why crack a login screen, when the dumpster may have crumpled-up passwords in it? Humans are part of the system, and you know how to hack them to get just about anywhere.','Internet Gateway','social_engineer'),
+new character('war driver','You use wireless to your advantage, gaining access from remote places. War driving is the act of methodically probing for wireless access points left unsecured, and you\'ve mapped out the whole city. Did you know that, from your favorite coffeeshop, a radio antenna at just the right angle gets you access to a network left  exposed on the top floor of the neighboring skyscraper? You do your mobile magic, long distance.','Wireless Router','war_driver'),
+new character('the insider','If you want tobeat \'em, then join \'em! The malicious insider tears it apart from the inside, taking advantage of free access to the surrounding machines. Welcome to the company! The server room is down the hall.','VPN Gateway','insider'),
+new character('botmaster','As a botmaster, you control hundreds - no, thousands - of machines all over the world, and you know how to use them all to dish it out, at scale. Your "zombies" share files, fire out spam, and launch denial of service attacks... all controlled by you.','Laptop Client','botmaster'),
+new character('cryptanalyst','Crypto is hard to get right. You\'ve picked a much easier game: recognizing when it\'s done wrong. Weak keys, unsafe primes, corrupt certificate authorities: an expert of finesse, the cryptanalyst is adept at tackling hard problems from a slightly different angle.','VLAN Switch','cryptanalyst'),
+new character('malware writer','When it comes to viruses, trojan horses, and worms you\'re the best of the best. An artist, a maestro, a poet ... that is, if poems could stop a car or explode a pacemaker. Like a nasty cold, your malware spreads quickly across the network.','Primary DNS','malware_writer')
 );
 
 // for now player1 (our only player for the beta) is a social engineer
-var player1 = {character: characters[0], name: '', currentNode: 0};
+var player1 = {character: characters[0], name: '', currentNode: 0, xpos: 0, ypos: 0};
 // set up dummy variables for the other 3 players
 //var player2 = {character: characters[1]; name: ''; currentNode: 0};
 //var player3 = {character: characters[2]; name: ''; currentNode: 0};
 //var player4 = {character: characters[3]; name: ''; currentNode: 0};
-var players = [player1]; // only one player for now
+players = [player1]; // only one player for now
 //var players = [player1, player2, player3, player4];
 
 $( document ).ready(function() {
 	shuffle();
     // display the tiles
     for(var i=0;i<network.length;++i) {
-		if (network[i].compromised == true) {
+		if (network[i].compromised === true) {
 			$('#tile'+(i+1)).find('img').attr('src','images/tiles/'+network[i].image+'_compromised.png');
+			//$("#"+network[i].x+network[i].y).css('background-image', 'url(images/tiles/'+network[i].image+'_compromised.png');
 		} else {
 			$('#tile'+(i+1)).find('img').attr('src','images/tiles/'+network[i].image+'.png');
+			//$("#"+network[i].x+network[i].y).css('background-image', 'url(images/tiles/'+network[i].image+'.png');
 		}
         $('#tile'+(i+1)).find('img').attr('alt',network[i].name);
     }
-	
+	// show the player icons
+	for(i=0;i<players.length;++i) {
+		showplayer(i,players[i].xpos,players[i].ypos);	
+	}
 	// resize tiles for current window
 	resizeTiles();
 	// resize tiles if window is resized
 	$( window ).resize(function() {
-	  resizeTiles();
+		resizeTiles();
 	});
 	
 	// tile flipping code
-    if ($('html').hasClass('csstransforms3d')) {          
-        $('.tile').removeClass('scroll').addClass('flip');     
+    if ($('html').hasClass('csstransforms3d')) {
+        $('.tile').removeClass('scroll').addClass('flip');
         $('.tile.flip').hover(
             function () {
                 $(this).find('.tile-wrapper').addClass('flipIt');
             },
             function () {
-                $(this).find('.tile-wrapper').delay(100).removeClass('flipIt');           
+                $(this).find('.tile-wrapper').delay(100).removeClass('flipIt');
             }
-        );        
+        );
     } else { // run this if the browser can't do css transformations
         $('.tile').hover(
             function () {
                 $(this).find('.tile-detail').stop().animate({bottom:0}, 500, 'easeOutCubic');
             },
             function () {
-                $(this).find('.tile-detail').stop().delay(100).animate({bottom: ($(this).height() * -1) }, 500, 'easeOutCubic');          
+                $(this).find('.tile-detail').stop().delay(100).animate({bottom: ($(this).height() * -1) }, 500, 'easeOutCubic');
             }
         );
     }
