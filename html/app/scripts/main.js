@@ -56,7 +56,7 @@ function shuffle() {
 		network[i] = temp;
 	}
 	// assign grid positions to the now shuffled nodes
-	// this information will be used to set the move options available for each node on each turn, depending on where the player is
+	// this information will be used to set and show the move options available on each turn
 	network[0].x = 2;
 	network[0].y = 0;
 	network[1].x = 3;
@@ -123,8 +123,8 @@ function shuffle() {
 				$('#icon'+i).attr('src','images/characters/icon_'+players[i].character.filestem+'.png');
 				//console.log('player'+i+' filestem is '+players[i].character.filestem);
 				$('#icon'+i).attr('alt',players[i].character.name);
-				$('#icon'+i).attr('height','50');
-				$('#icon'+i).attr('width','50');
+				$('#icon'+i).attr('height','50px');
+				$('#icon'+i).attr('width','50px');
 				//showplayer(i,network[j].x,network[j].y); // no point in doing this here since the initial tile drawing routine kills it
 			}
 		}
@@ -135,7 +135,34 @@ function showplayer(playernum,xpos,ypos) {
 	// move the player to a new position on the board grid
 	var image = $('#icon'+playernum);
 	image.remove();
-	$("#"+xpos+ypos).append(image);
+	$("#"+ypos+xpos).append(image);
+
+	// turn off flipping?
+	
+	// hide all buttons
+	$('button').css('display','none');
+
+	// set up buttons for the current tile
+	$("#"+ypos+xpos+" button.drop").css('display','block'); // should really check to see if player has any loot to drop first
+	$("#"+ypos+xpos+" button.skip").css('display','block');
+	// if there's a character here show the 'give' and 'swap' buttons
+	// if there's any loot on the tile show the 'pick up' button
+	// if tile has an asset and that asset has not already been retrieved show the 'retrieve' button
+
+	// set up buttons for the tile to the north
+	$("#"+(ypos-1)+xpos+" button.skip").css('display','block');
+	// if compromised show the 'move here' button, otherwise show the 'compromise' button
+
+	// set up buttons for the tile to the south
+	$("#"+(ypos+1)+xpos+" button.skip").css('display','block');
+
+	// set up buttons for the tile to the east
+	$("#"+ypos+(xpos-1)+" button.skip").css('display','block');
+
+	// set up buttons for the tile to the west
+	$("#"+ypos+(xpos+1)+" button.skip").css('display','block');
+
+	// set up any other tiles for the current character type (eg show 'move' and 'skip' on any compromised tiles for the social engineer)
 }
 
 function resizeTiles() {
@@ -155,7 +182,7 @@ function character(name,description,start,filestem) {
 var characters = new Array(
 new character('social engineer','A master of manipulation, the social engineer attacks the human factor of security. Why pick a lock when they\'ll open the door for anyone dressed like a delivery person? Why crack a login screen, when the dumpster may have crumpled-up passwords in it? Humans are part of the system, and you know how to hack them to get just about anywhere.','Internet Gateway','social_engineer'),
 new character('war driver','You use wireless to your advantage, gaining access from remote places. War driving is the act of methodically probing for wireless access points left unsecured, and you\'ve mapped out the whole city. Did you know that, from your favorite coffeeshop, a radio antenna at just the right angle gets you access to a network left  exposed on the top floor of the neighboring skyscraper? You do your mobile magic, long distance.','Wireless Router','war_driver'),
-new character('the insider','If you want tobeat \'em, then join \'em! The malicious insider tears it apart from the inside, taking advantage of free access to the surrounding machines. Welcome to the company! The server room is down the hall.','VPN Gateway','insider'),
+new character('the insider','If you want to beat \'em, then join \'em! The malicious insider tears it apart from the inside, taking advantage of free access to the surrounding machines. Welcome to the company! The server room is down the hall.','VPN Gateway','insider'),
 new character('botmaster','As a botmaster, you control hundreds - no, thousands - of machines all over the world, and you know how to use them all to dish it out, at scale. Your "zombies" share files, fire out spam, and launch denial of service attacks... all controlled by you.','Laptop Client','botmaster'),
 new character('cryptanalyst','Crypto is hard to get right. You\'ve picked a much easier game: recognizing when it\'s done wrong. Weak keys, unsafe primes, corrupt certificate authorities: an expert of finesse, the cryptanalyst is adept at tackling hard problems from a slightly different angle.','VLAN Switch','cryptanalyst'),
 new character('malware writer','When it comes to viruses, trojan horses, and worms you\'re the best of the best. An artist, a maestro, a poet ... that is, if poems could stop a car or explode a pacemaker. Like a nasty cold, your malware spreads quickly across the network.','Primary DNS','malware_writer')
@@ -193,6 +220,12 @@ $( document ).ready(function() {
 	$( window ).resize(function() {
 		resizeTiles();
 	});
+	// center the menus for each tile
+	$('.btn-group-vertical').css({
+        'position' : 'absolute',
+        'left' : '50%',
+        'top' : '50%'
+    });
 	
 	// tile flipping code
     if ($('html').hasClass('csstransforms3d')) {

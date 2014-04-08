@@ -110,7 +110,7 @@ float:left;
     position: relative;
 }
 
-.tile img {
+.tile ximg {
     width:100%;
     height:100%;
     position:absolute;
