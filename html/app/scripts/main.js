@@ -1,4 +1,5 @@
-
+var BACKGROUND_COLOUR = '#F7F7D6';
+var currentplayer = 0; // currently active player
 var players = [];
 // set up the default board: a 6x6 array of 2, 4, 6, 6, 4, 2 cards
 // each element of the array has either a -1 (no tile) or a non-negative integer corresponding to the network array index corresponding to that node
@@ -125,42 +126,91 @@ function shuffle() {
 				$('#icon'+i).attr('alt',players[i].character.name);
 				$('#icon'+i).attr('height','50px');
 				$('#icon'+i).attr('width','50px');
-				//showplayer(i,network[j].x,network[j].y); // no point in doing this here since the initial tile drawing routine kills it
 			}
 		}
 	}
 }
-
+function showTakeOrMove(x,y) {
+	// look for a tile at the x,y grid position
+	// if compromised show the 'move here' button, otherwise show the 'compromise' button
+	var tilenum = board[y][x];
+	if (tilenum > 0) { // there is a tile here
+		//console.log('north tilenum: '+tilenum+' name: '+network[tilenum].name);
+		if(network[tilenum].compromised === true) {
+			$('#'+y+x+' button.move').css('display','block');
+		} else {
+			$('#'+y+x+' button.compromise').css('display','block');
+		}
+		// show that this is a possible target
+		$('#'+y+x).css('background-color',BACKGROUND_COLOUR);
+		// turn on the slide up menu
+		activateTile(y.toString()+x.toString());
+	}
+}
+function activateTile(id) {
+	// enable the slide up menu for a tile
+	$('#'+id).parent().hover(
+		function () {
+			$(this).find('.tile-detail').stop().animate({bottom:0}, 500, 'easeOutCubic');
+		},
+		function () {
+			$(this).find('.tile-detail').stop().delay(100).animate({bottom: ($(this).height() * -1) }, 500, 'easeOutCubic');
+		}
+	);
+}
 function showplayer(playernum,xpos,ypos) {
+	// update the move number
+	players[playernum].movenum += 1;
+	
+	if (players[playernum].movenum > 3) {
+		// if movenum is over 3, move on to the loot phase
+		getLoot();
+	} else {
+		// update the slide up menus
+		$('.movenum').text(players[playernum].movenum);
+	}
 	// move the player to a new position on the board grid
 	var image = $('#icon'+playernum);
 	image.remove();
-	$("#"+ypos+xpos).append(image);
-
-	// turn off flipping?
+	$('#'+ypos+xpos).append(image);
 	
 	// hide all buttons
 	$('button').css('display','none');
+	// turn the move number display button back on
+	$('.btn-info').css('display','block');
+	// turn off any background colours (used to show which tiles are possible targets)
+	$('.tile-wrapper').css('background-color','none');
+	// turn off any hover events
+	$('.tile').unbind('mouseenter mouseleave');
 
 	// set up buttons for the current tile
-	$("#"+ypos+xpos+" button.drop").css('display','block'); // should really check to see if player has any loot to drop first
-	$("#"+ypos+xpos+" button.skip").css('display','block');
-	// if there's a character here show the 'give' and 'swap' buttons
+	var id = ypos.toString() + xpos.toString();
+	$('#'+id+' button.drop').css('display','block'); // should really check to see if player has any loot to drop first
+	$('#'+id+' button.skip').css('display','block');
+	// show that this is a possible target
+	$('#'+id).css('background-color',BACKGROUND_COLOUR);
+	// turn on the slide up menu
+	activateTile(id);
+	// if there's another character here show the 'give' and 'swap' buttons
 	// if there's any loot on the tile show the 'pick up' button
 	// if tile has an asset and that asset has not already been retrieved show the 'retrieve' button
 
 	// set up buttons for the tile to the north
-	$("#"+(ypos-1)+xpos+" button.skip").css('display','block');
+	$('#'+(ypos-1)+xpos+' button.skip').css('display','block');
 	// if compromised show the 'move here' button, otherwise show the 'compromise' button
+	showTakeOrMove(xpos,ypos-1);
 
 	// set up buttons for the tile to the south
-	$("#"+(ypos+1)+xpos+" button.skip").css('display','block');
+	$('#'+(ypos+1)+xpos+' button.skip').css('display','block');
+	showTakeOrMove(xpos,ypos+1);
 
 	// set up buttons for the tile to the east
-	$("#"+ypos+(xpos-1)+" button.skip").css('display','block');
+	$('#'+ypos+(xpos-1)+' button.skip').css('display','block');
+	showTakeOrMove(xpos-1,ypos);
 
 	// set up buttons for the tile to the west
-	$("#"+ypos+(xpos+1)+" button.skip").css('display','block');
+	$('#'+ypos+(xpos+1)+' button.skip').css('display','block');
+	showTakeOrMove(xpos+1,ypos);
 
 	// set up any other tiles for the current character type (eg show 'move' and 'skip' on any compromised tiles for the social engineer)
 }
@@ -189,7 +239,7 @@ new character('malware writer','When it comes to viruses, trojan horses, and wor
 );
 
 // for now player1 (our only player for the beta) is a social engineer
-var player1 = {character: characters[0], name: '', currentNode: 0, xpos: 0, ypos: 0};
+var player1 = {character: characters[0], name: '', currentNode: 0, xpos: 0, ypos: 0, movenum: 0};
 // set up dummy variables for the other 3 players
 //var player2 = {character: characters[1]; name: ''; currentNode: 0};
 //var player3 = {character: characters[2]; name: ''; currentNode: 0};
@@ -197,22 +247,35 @@ var player1 = {character: characters[0], name: '', currentNode: 0, xpos: 0, ypos
 players = [player1]; // only one player for now
 //var players = [player1, player2, player3, player4];
 
+function skipMove() {
+	// player has clicked on the 'skip' button
+	players[currentplayer].movenum += 1;
+	$('.movenum').text(players[currentplayer].movenum);
+	if (players[currentplayer].movenum > 3) {
+		// move on to the lo0t distribution phase of play
+		getLoot();
+	}
+}
+function getLoot() {
+	players[currentplayer].movenum = 0;
+	// get some new loot
+}
 $( document ).ready(function() {
 	shuffle();
     // display the tiles
     for(var i=0;i<network.length;++i) {
 		if (network[i].compromised === true) {
 			$('#tile'+(i+1)).find('img').attr('src','images/tiles/'+network[i].image+'_compromised.png');
-			//$("#"+network[i].x+network[i].y).css('background-image', 'url(images/tiles/'+network[i].image+'_compromised.png');
+			//$('#'+network[i].x+network[i].y).css('background-image', 'url(images/tiles/'+network[i].image+'_compromised.png');
 		} else {
 			$('#tile'+(i+1)).find('img').attr('src','images/tiles/'+network[i].image+'.png');
-			//$("#"+network[i].x+network[i].y).css('background-image', 'url(images/tiles/'+network[i].image+'.png');
+			//$('#'+network[i].x+network[i].y).css('background-image', 'url(images/tiles/'+network[i].image+'.png');
 		}
         $('#tile'+(i+1)).find('img').attr('alt',network[i].name);
     }
 	// show the player icons
 	for(i=0;i<players.length;++i) {
-		showplayer(i,players[i].xpos,players[i].ypos);	
+		showplayer(i,players[i].xpos,players[i].ypos);
 	}
 	// resize tiles for current window
 	resizeTiles();
@@ -220,33 +283,10 @@ $( document ).ready(function() {
 	$( window ).resize(function() {
 		resizeTiles();
 	});
-	// center the menus for each tile
+	// centre the menus for each tile
 	$('.btn-group-vertical').css({
         'position' : 'absolute',
-        'left' : '50%',
-        'top' : '50%'
+        'left' : '30%',
+        'top' : '20%'
     });
-	
-	// tile flipping code
-    if ($('html').hasClass('csstransforms3d')) {
-        $('.tile').removeClass('scroll').addClass('flip');
-        $('.tile.flip').hover(
-            function () {
-                $(this).find('.tile-wrapper').addClass('flipIt');
-            },
-            function () {
-                $(this).find('.tile-wrapper').delay(100).removeClass('flipIt');
-            }
-        );
-    } else { // run this if the browser can't do css transformations
-        $('.tile').hover(
-            function () {
-                $(this).find('.tile-detail').stop().animate({bottom:0}, 500, 'easeOutCubic');
-            },
-            function () {
-                $(this).find('.tile-detail').stop().delay(100).animate({bottom: ($(this).height() * -1) }, 500, 'easeOutCubic');
-            }
-        );
-    }
-	// end tile flipping code
 });
