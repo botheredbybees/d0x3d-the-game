@@ -1,13 +1,13 @@
 function node(name,image,asset)
 {
-	// make asset an optional argument as most tiles don't have one on them
-	// the next line will set the asset to an empty string if it hasn't been passed in the object constructor function call
-	asset = typeof asset !== 'undefined' ? asset : ''; 
-	this.name=name;
-	this.image=image;
-	this.compromised=false;
-	this.loot=new Array();
-	this.asset=asset;
+    // make asset an optional argument as most tiles don't have one on them
+    // the next line will set the asset to an empty string if it hasn't been passed in the object constructor function call
+    asset = typeof asset !== 'undefined' ? asset : '';
+    this.name=name;
+    this.image=image;
+    this.compromised=false;
+    this.loot=[];
+    this.asset=asset;
 }
 
 var network = new Array(new node('Backup File Server', 'node_backup_file_server'),
@@ -37,9 +37,8 @@ new node('Internet Gateway', 'node_internet_gateway'));
 
 $( document ).ready(function() {
     // load up the tiles
-    for(i=0;i<network.length;++i) {
-    	$('#tile'+(i+1)).find('img').attr('src','img/tiles/'+network[i].image+'.png');
-    	$('#tile'+(i+1)).find('img').attr('alt',network[i].name);
-
+    for(var i=0;i<network.length;++i) {
+        $('#tile'+(i+1)).find('img').attr('src','images/tiles/'+network[i].image+'.png');
+        $('#tile'+(i+1)).find('img').attr('alt',network[i].name);
     }
 });
