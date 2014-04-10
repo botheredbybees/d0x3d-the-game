@@ -16,6 +16,7 @@
 var BACKGROUND_COLOUR = '#FFA500';
 var currentplayer = 0; // currently active player
 var players = [];
+
 // set up the default board: a 6x6 array of 2, 4, 6, 6, 4, 2 cards
 // each element of the array has either a -1 (no tile) or a non-negative integer corresponding to the network array index corresponding to that node
 // for future versions there may be other layouts
@@ -60,6 +61,35 @@ new node('Web Server', 'node_web_server'),
 new node('Wireless Router', 'node_wireless_router'),
 new node('Internet Gateway', 'node_internet_gateway'));
 
+var lo0t = new Array('detection_honeypot_audit',
+'detection_net_anomaly',
+'detection_virus_sig',
+'exploit_buffer_overflow',
+'exploit_format_string_vuln',
+'exploit_integer_overflow',
+'exploit_logic_bomb',
+'exploit_trojan_horse',
+'shares_auth',
+'shares_auth',
+'shares_auth',
+'shares_auth',
+'shares_auth',
+'shares_financial',
+'shares_financial',
+'shares_financial',
+'shares_financial',
+'shares_financial',
+'shares_ip',
+'shares_ip',
+'shares_ip',
+'shares_ip',
+'shares_ip',
+'shares_pii',
+'shares_pii',
+'shares_pii',
+'shares_pii',
+'shares_pii');
+
 function character(name,description,start,filestem) {
     this.name = name;
     this.description = description;
@@ -77,25 +107,27 @@ new character('cryptanalyst','Crypto is hard to get right. You\'ve picked a much
 new character('malware writer','When it comes to viruses, trojan horses, and worms you\'re the best of the best. An artist, a maestro, a poet ... that is, if poems could stop a car or explode a pacemaker. Like a nasty cold, your malware spreads quickly across the network.','Primary DNS','malware_writer')
 );
 
+// in beta we're only having one player, who will be a social engineer. later we'll add more players and allow for selection of characters from the following list:
+var player1 = {character: characters[0], name: '', currentNode: 0, xpos: 0, ypos: 0, movenum: 0, lo0t: []};
+//var player2 = {character: characters[1]; name: '', currentNode: 0, xpos: 0, ypos: 0, movenum: 0, lo0t: []};
+//var player3 = {character: characters[2]; name: '', currentNode: 0, xpos: 0, ypos: 0, movenum: 0, lo0t: []};
+//var player4 = {character: characters[3]; name: '', currentNode: 0, xpos: 0, ypos: 0, movenum: 0, lo0t: []};
 
+players = [player1]; // only one player for now
+//if you wanted 4 players you would create: var players = [player1, player2, player3, player4];
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 // 
-// SETUP - initialisation routines. Run when the game starts
+// SETUP - initialisation routines. These run just before the game starts
 //
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-function shuffle() {
+function setup() {
+	// shuffle the loot
+	shuffle(lo0t);
+		
 	// shuffle the nodes on the network
-	var target, temp;
-	for(var i=0; i<network.length; ++i) {
-		// for each node, find a random target on the network
-		target=Math.floor((Math.random()*network.length));
-		// and swap our node with the target node
-		temp = network[target];
-		network[target] = network[i];
-		network[i] = temp;
-	}
+	shuffle(network);
 	// assign grid positions to the now shuffled nodes
 	// this information will be used to set and show the move options available on each turn
 	network[0].x = 2;
@@ -152,8 +184,18 @@ function shuffle() {
 	network[23].x = 3;
 	network[23].y = 5;
 	
-	// find the player start position in the grid
-	for(i=0;i<players.length;++i) {
+	
+	for(var i=0;i<players.length;++i) {
+		// give each player 2 lo0t cards
+		// we need to find the first 2 'good' cards, ignoring any detection cards
+		for (var j=0;j<lo0t.length && players[i].lo0t.length < 2;++j) {
+			if(lo0t[j].substring(0, 9) != "detection") {
+				// got a good card
+				x = lo0t.splice(j, 1);
+				players[i].lo0t.push(x[0]);
+			}
+		}
+		// find the player start position in the grid
 		for(var j=0; j<network.length;++j) {
 			if (network[j].name === players[i].character.startingNode) {
 				//console.log('player'+i+' character is at the '+network[j].name);
@@ -171,23 +213,27 @@ function shuffle() {
 	}
 }
 
+function shuffle(cards) {
+	// shuffle the elements in the array
+	var target, temp;
+	for(var i=0; i<cards.length; ++i) {
+		// for each card, find a random target in the array
+		target=Math.floor((Math.random()*cards.length));
+		// and swap our card with the target card
+		temp = cards[target];
+		cards[target] = cards[i];
+		cards[i] = temp;
+	}
+}
+
 function resizeTiles() {
     $( '.tile' ).each(function( ) {
         $( this ).css('height',$(this).css('width'));
     });
 }
 
-// in beta we're only having one player, who will be a social engineer. later we'll add more players and allow for selection of characters from the following list:
-var player1 = {character: characters[0], name: '', currentNode: 0, xpos: 0, ypos: 0, movenum: 0};
-// set up dummy variables for the other 3 players
-//var player2 = {character: characters[1]; name: '', currentNode: 0, xpos: 0, ypos: 0, movenum: 0};
-//var player3 = {character: characters[2]; name: '', currentNode: 0, xpos: 0, ypos: 0, movenum: 0};
-//var player4 = {character: characters[3]; name: '', currentNode: 0, xpos: 0, ypos: 0, movenum: 0};
-players = [player1]; // only one player for now
-//if you wanted 4 players you would create: var players = [player1, player2, player3, player4];
-
 $( document ).ready(function() {
-    shuffle();
+    setup();
     // display the tiles
     for(var i=0;i<network.length;++i) {
         if (network[i].compromised === true) {
@@ -197,9 +243,13 @@ $( document ).ready(function() {
         }
         $('#tile'+network[i].y+network[i].x).find('img').attr('alt',network[i].name);
     }
-    // show the player icons
+    // show the player icons and their lo0t
     for(i=0;i<players.length;++i) {
         showPlayer(i,players[i].xpos,players[i].ypos);
+		var lo0t = players[i].lo0t;
+		for(j=0;j<lo0t.length;++j) {
+			$('#p'+(i+1)+'loot'+j).html('<img src="images/lo0t/lo0t.'+lo0t[j]+'.png" class="img-responsive" alt="'+lo0t[j]+'">');
+		}
     }
     // turn on tooltips
     $('.asset').tooltip();
@@ -215,6 +265,11 @@ $( document ).ready(function() {
         'left' : '25%',
         'top' : '20%'
     });
+	// set the background color on the flip side (this is a bit lazy, and should by rights have happened in the css file, but I'm still experimenting with colours and know I'll forget to come back and fix this :-)
+	$('.tile-detail').css('background-color',BACKGROUND_COLOUR);
+	
+	// start the player off on the first move
+	incrementMove();
 });
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -226,8 +281,9 @@ $( document ).ready(function() {
 function showTakeOrMove(x,y) {
 	// look for a tile at the x,y grid position
 	// if compromised show the 'move here' button, otherwise show the 'compromise' button
-    if (x>5 || y>5) {
-        // we're off the grid
+	// add the relevant action to the button
+    if (x>5 || y>5 || x<0 || y<0) {
+        // we're off the grid, don't bother trying
         return;
     }
 	var nodeNum = board[y][x];
@@ -255,7 +311,8 @@ function showTakeOrMove(x,y) {
 }
 
 function movePlayer(x,y) {
-    // move the player to a new tile
+    // move the player to a new tile. 
+	// This function is called during game play for the currently active player but the real action happens in showPlayer (which is also called when the board is first set up for each of the player tokens being used)
     showPlayer(currentplayer,x,y);
     incrementMove();
 }
@@ -282,8 +339,7 @@ function activateTile(id) {
 	);
 }
 function showPlayer(playernum,xpos,ypos) {
-	// move the player to a new position on the board grid
-    console.log('showplayer: '+playernum+' '+xpos+' '+ypos);
+	// show the player at a given position on the board grid and set up the current and surrounding tiles ready for action
 	var image = $('#icon'+playernum);
 	image.remove();
 	$('#'+ypos+xpos).append(image);
@@ -310,35 +366,45 @@ function showPlayer(playernum,xpos,ypos) {
 	// if tile has an asset and that asset has not already been retrieved show the 'retrieve' button
 
 	// set up buttons for the tile to the north
-	$('#'+(ypos-1)+xpos+' button.skip').css('display','block');
-	// if compromised show the 'move here' button, otherwise show the 'compromise' button
-	showTakeOrMove(xpos,ypos-1);
+	if(ypos > 0) {
+		$('#'+(ypos-1)+xpos+' button.skip').css('display','block');
+		// if compromised show the 'move here' button, otherwise show the 'compromise' button
+		showTakeOrMove(xpos,ypos-1);
+	}
 
-	// set up buttons for the tile to the south
-	$('#'+(ypos+1)+xpos+' button.skip').css('display','block');
-	showTakeOrMove(xpos,ypos+1);
+	if(ypos < 5) {
+		// set up buttons for the tile to the south
+		$('#'+(ypos+1)+xpos+' button.skip').css('display','block');
+		showTakeOrMove(xpos,ypos+1);
+	}
 
-	// set up buttons for the tile to the east
-	$('#'+ypos+(xpos-1)+' button.skip').css('display','block');
-	showTakeOrMove(xpos-1,ypos);
+	if(xpos > 0) {
+		// set up buttons for the tile to the east
+		$('#'+ypos+(xpos-1)+' button.skip').css('display','block');
+		showTakeOrMove(xpos-1,ypos);
+	}
 
-	// set up buttons for the tile to the west
-	$('#'+ypos+(xpos+1)+' button.skip').css('display','block');
-	showTakeOrMove(xpos+1,ypos);
+	if(xpos < 5) {
+		// set up buttons for the tile to the west
+		$('#'+ypos+(xpos+1)+' button.skip').css('display','block');
+		showTakeOrMove(xpos+1,ypos);
+	}
 
 	// set up any other tiles for the current character type (eg show 'move' and 'skip' on any compromised tiles for the social engineer)
+	
 }
 
 function incrementMove() {
 	// player has clicked on the 'skip' button
 	players[currentplayer].movenum += 1;
-	$('.movenum').text(players[currentplayer].movenum);
 	if (players[currentplayer].movenum > 3) {
 		// move on to the lo0t distribution phase of play
 		getLoot();
 	}
+	$('.movenum').text(players[currentplayer].movenum);
 }
 function getLoot() {
 	players[currentplayer].movenum = 0;
 	// get some new loot
+	$('#lo0t').modal('show');
 }

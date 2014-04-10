@@ -9,6 +9,8 @@
 body {
     padding-top: 20px;
     padding-bottom: 20px;
+	background-image: url('../images/backdrop.png');
+	background-size: cover;
 }
 
 /* Everything but the jumbotron gets side spacing for mobile first views */
@@ -127,7 +129,8 @@ float:left;
     background:#fff;
     font-family:arial;
     font-weight:bold;
-    font-size:16px;         
+    font-size:16px; 
+	border-radius: 3px;
 }
 
 .tile .tile-detail a {
