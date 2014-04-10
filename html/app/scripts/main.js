@@ -265,13 +265,13 @@ $( document ).ready(function() {
     // display the tiles
     for(var i=0;i<network.length;++i) {
 		if (network[i].compromised === true) {
-			$('#tile'+(i+1)).find('img').attr('src','images/tiles/'+network[i].image+'_compromised.png');
+			$('#tile'+network[i].y+network[i].x).find('img').attr('src','images/tiles/'+network[i].image+'_compromised.png');
 			//$('#'+network[i].x+network[i].y).css('background-image', 'url(images/tiles/'+network[i].image+'_compromised.png');
 		} else {
-			$('#tile'+(i+1)).find('img').attr('src','images/tiles/'+network[i].image+'.png');
+			$('#tile'+network[i].y+network[i].x).find('img').attr('src','images/tiles/'+network[i].image+'.png');
 			//$('#'+network[i].x+network[i].y).css('background-image', 'url(images/tiles/'+network[i].image+'.png');
 		}
-        $('#tile'+(i+1)).find('img').attr('alt',network[i].name);
+        $('#tile'+network[i].y+network[i].x).find('img').attr('alt',network[i].name);
     }
 	// show the player icons
 	for(i=0;i<players.length;++i) {
