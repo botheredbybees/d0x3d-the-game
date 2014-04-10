@@ -1,4 +1,4 @@
-var BACKGROUND_COLOUR = '#F7F7D6';
+var BACKGROUND_COLOUR = '#FFA500';
 var currentplayer = 0; // currently active player
 var players = [];
 // set up the default board: a 6x6 array of 2, 4, 6, 6, 4, 2 cards
@@ -277,6 +277,8 @@ $( document ).ready(function() {
 	for(i=0;i<players.length;++i) {
 		showplayer(i,players[i].xpos,players[i].ypos);
 	}
+    // turn on tooltips
+    $('.asset').tooltip();
 	// resize tiles for current window
 	resizeTiles();
 	// resize tiles if window is resized
@@ -286,7 +288,7 @@ $( document ).ready(function() {
 	// centre the menus for each tile
 	$('.btn-group-vertical').css({
         'position' : 'absolute',
-        'left' : '30%',
+        'left' : '25%',
         'top' : '20%'
     });
 });

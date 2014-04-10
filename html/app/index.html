@@ -32,6 +32,30 @@
             <div class="header">
                 <h1><span class="red">[</span>d0x3d!<span class="red">]</span></h1>
             </div>
+                        <div class="row hud">
+                <div class="col-md-2" id="loot">
+                    <img src="images/backs/back_lo0t.png" class="img-responsive" width="240" height="176" alt="lo0t cards">
+                </div>
+
+                <div class="col-md-1">
+                    <img src="images/stickers/sticker_auth_unclaimed.png" width="120" height="120" class="asset img-responsive" alt="Authentication Credentials" data-placement="bottom" data-toggle="tooltip" data-container="body" data-html="true" title="<h2>[authentication credentials]</h2> <p>Authentication credentials are data you use to prove your identity. They can be something you have (like a driver’s license), something you know (like a password), or something you are (like a fingerprint). When stolen, someone could use these credentials to impersonate you.</p><p>You can retrieve your authentication credentials by placing 4 matching lo0t cards on the Certificate Services or Single Sign On Service nodes of the network</p>">
+                    <br>                    
+                    <img src="images/stickers/sticker_financial_unclaimed.png" width="120" height="120" class="asset img-responsive" alt="Financial Data"  data-placement="bottom" data-toggle="tooltip" data-container="body" data-html="true" title="<h2>[financial data]</h2> <p>If it’s worth money or about money, it's financial data: credit card numbers, bank account numbers, tax data, electronic gift certificates, e-cash, quarterly earnings reports, etc.</p><p>You can retrieve your financial data by placing 4 matching lo0t cards on the Customer Database or Sales Database nodes of the network</p>">
+                </div>
+                <div class="col-md-1">
+                    <img src="images/stickers/sticker_ip_unclaimed.png" width="120" height="120" class="asset img-responsive" alt="Intellectual Property" data-placement="bottom" data-toggle="tooltip" data-container="body" data-html="true" title="<h2>[intellectual property]</h2> <p>Intellectual property is data that came out of your head or your hands, like inventions and creative works: an essay for school, an original photo, a piece of software, a secret recipe, your band’s demo tracks, your YouTube videos, etc.</p><p>You can retrieve your intellectual property by placing 4 matching lo0t cards on the Network File Server or Backup File Server nodes of the network</p>">
+                    <br>                    
+                    <img src="images/stickers/sticker_pii_unclaimed.png" width="120" height="120" class="asset img-responsive" alt="Personally Identifiable Information" data-placement="bottom" data-toggle="tooltip" data-container="body" data-html="true" title="<h2>[personally identifiable information]</h2> <p>Personally identifiable information is data, about you or someone else: your home phone number, your address, photos of you and your friends, your grades, your medical records, etc.</p><p>You can retrieve your personally identifiable information by placing 4 matching lo0t cards on the IMAP Server or SMTP Server nodes of the network</p>">
+                </div>
+
+                <div class="col-md-6" id="infocon">
+                    <img src="images/infocon/infocon0.png" class="img-responsive" width="720" height="299" alt="infocon">
+                </div>
+
+                <div class="col-md-2" id="patch">
+                    <img src="images/backs/back_patch.png" class="img-responsive" width="240" height="176" alt="patch cards">
+                </div>
+            </div>
 
             <div class="row">
                 <div class="col-md-10 col-md-offset-1" id="player3">
@@ -47,10 +71,51 @@
                 <div class="col-md-10" id="tiles">
                     <!-- tiles, lo0t and patch cards -->
                     <div class="row" id="row1">
-                        <div class="col-sm-2" id="loot">
-                            <img src="images/backs/back_lo0t.png" class="img-responsive" width="240" height="176" alt="lo0t cards">
+                        <div class="col-sm-2" id="tile-1">
+                            <div class="tile scroll img-responsive">
+                                <div class="tile-wrapper" id="00">
+                                    <img src="" class="img-responsive" width="240" height="240" alt="">
+                                    <div class="tile-detail">
+                                        <div class="actions">
+                                            <div class="btn-group-vertical">
+                                                <button type="button" class="btn btn-info disabled">Move <span class="movenum"></span> of 3</button>
+                                                <button type="button" class="btn btn-default compromise">compromise</button>
+                                                <button type="button" class="btn btn-default pickup">pick up loot</button>
+                                                <button type="button" class="btn btn-default drop">drop loot</button>
+                                                <button type="button" class="btn btn-default give">give loot</button>
+                                                <button type="button" class="btn btn-default exchange">exchange loot</button>
+                                                <button type="button" class="btn btn-default move">move here</button>
+                                                <button type="button" class="btn btn-default recover">recover asset</button>
+                                                <button type="button" class="btn btn-default skip" onclick="skipMove()">skip move</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-sm-2 col-sm-offset-2" id="tile1">
+                        <div class="col-sm-2" id="tile0">
+                            <div class="tile scroll img-responsive">
+                                <div class="tile-wrapper" id="01">
+                                    <img src="" class="img-responsive" width="240" height="240" alt="">
+                                    <div class="tile-detail">
+                                        <div class="actions">
+                                            <div class="btn-group-vertical">
+                                                <button type="button" class="btn btn-info disabled">Move <span class="movenum"></span> of 3</button>
+                                                <button type="button" class="btn btn-default compromise">compromise</button>
+                                                <button type="button" class="btn btn-default pickup">pick up loot</button>
+                                                <button type="button" class="btn btn-default drop">drop loot</button>
+                                                <button type="button" class="btn btn-default give">give loot</button>
+                                                <button type="button" class="btn btn-default exchange">exchange loot</button>
+                                                <button type="button" class="btn btn-default move">move here</button>
+                                                <button type="button" class="btn btn-default recover">recover asset</button>
+                                                <button type="button" class="btn btn-default skip" onclick="skipMove()">skip move</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-2" id="tile1">
                             <div class="tile scroll img-responsive">
                                 <div class="tile-wrapper" id="02">
                                     <img src="" class="img-responsive" width="240" height="240" alt="">
@@ -94,12 +159,75 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-sm-2 col-sm-offset-2" id="patch">
-                            <img src="images/backs/back_patch.png" class="img-responsive" width="240" height="176" alt="patch cards">
+                        <div class="col-sm-2" id="tile1">
+                            <div class="tile scroll img-responsive">
+                                <div class="tile-wrapper" id="04">
+                                    <img src="" class="img-responsive" width="240" height="240" alt="">
+                                    <div class="tile-detail">
+                                        <div class="actions">
+                                            <div class="btn-group-vertical">
+                                                <button type="button" class="btn btn-info disabled">Move <span class="movenum"></span> of 3</button>
+                                                <button type="button" class="btn btn-default compromise">compromise</button>
+                                                <button type="button" class="btn btn-default pickup">pick up loot</button>
+                                                <button type="button" class="btn btn-default drop">drop loot</button>
+                                                <button type="button" class="btn btn-default give">give loot</button>
+                                                <button type="button" class="btn btn-default exchange">exchange loot</button>
+                                                <button type="button" class="btn btn-default move">move here</button>
+                                                <button type="button" class="btn btn-default recover">recover asset</button>
+                                                <button type="button" class="btn btn-default skip" onclick="skipMove()">skip move</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-2" id="tile1">
+                            <div class="tile scroll img-responsive">
+                                <div class="tile-wrapper" id="05">
+                                    <img src="" class="img-responsive" width="240" height="240" alt="">
+                                    <div class="tile-detail">
+                                        <div class="actions">
+                                            <div class="btn-group-vertical">
+                                                <button type="button" class="btn btn-info disabled">Move <span class="movenum"></span> of 3</button>
+                                                <button type="button" class="btn btn-default compromise">compromise</button>
+                                                <button type="button" class="btn btn-default pickup">pick up loot</button>
+                                                <button type="button" class="btn btn-default drop">drop loot</button>
+                                                <button type="button" class="btn btn-default give">give loot</button>
+                                                <button type="button" class="btn btn-default exchange">exchange loot</button>
+                                                <button type="button" class="btn btn-default move">move here</button>
+                                                <button type="button" class="btn btn-default recover">recover asset</button>
+                                                <button type="button" class="btn btn-default skip" onclick="skipMove()">skip move</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="row" id="row2">
-                        <div class="col-sm-2 col-sm-offset-2" id="tile3">
+                        <div class="col-sm-2" id="tile1">
+                            <div class="tile scroll img-responsive">
+                                <div class="tile-wrapper" id="10">
+                                    <img src="" class="img-responsive" width="240" height="240" alt="">
+                                    <div class="tile-detail">
+                                        <div class="actions">
+                                            <div class="btn-group-vertical">
+                                                <button type="button" class="btn btn-info disabled">Move <span class="movenum"></span> of 3</button>
+                                                <button type="button" class="btn btn-default compromise">compromise</button>
+                                                <button type="button" class="btn btn-default pickup">pick up loot</button>
+                                                <button type="button" class="btn btn-default drop">drop loot</button>
+                                                <button type="button" class="btn btn-default give">give loot</button>
+                                                <button type="button" class="btn btn-default exchange">exchange loot</button>
+                                                <button type="button" class="btn btn-default move">move here</button>
+                                                <button type="button" class="btn btn-default recover">recover asset</button>
+                                                <button type="button" class="btn btn-default skip" onclick="skipMove()">skip move</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-2" id="tile3">
                             <div class="tile scroll img-responsive">
                                 <div class="tile-wrapper" id="11">
                                     <img src="" class="img-responsive" width="240" height="240" alt="">
@@ -184,6 +312,28 @@
 											</div>
 										</div>
 									</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-2" id="tile1">
+                            <div class="tile scroll img-responsive">
+                                <div class="tile-wrapper" id="15">
+                                    <img src="" class="img-responsive" width="240" height="240" alt="">
+                                    <div class="tile-detail">
+                                        <div class="actions">
+                                            <div class="btn-group-vertical">
+                                                <button type="button" class="btn btn-info disabled">Move <span class="movenum"></span> of 3</button>
+                                                <button type="button" class="btn btn-default compromise">compromise</button>
+                                                <button type="button" class="btn btn-default pickup">pick up loot</button>
+                                                <button type="button" class="btn btn-default drop">drop loot</button>
+                                                <button type="button" class="btn btn-default give">give loot</button>
+                                                <button type="button" class="btn btn-default exchange">exchange loot</button>
+                                                <button type="button" class="btn btn-default move">move here</button>
+                                                <button type="button" class="btn btn-default recover">recover asset</button>
+                                                <button type="button" class="btn btn-default skip" onclick="skipMove()">skip move</button>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -457,7 +607,29 @@
                         </div>
                     </div>
                     <div class="row" id="row5">
-                        <div class="col-sm-2 col-sm-offset-2" id="tile19">
+                        <div class="col-sm-2" id="tile1">
+                            <div class="tile scroll img-responsive">
+                                <div class="tile-wrapper" id="40">
+                                    <img src="" class="img-responsive" width="240" height="240" alt="">
+                                    <div class="tile-detail">
+                                        <div class="actions">
+                                            <div class="btn-group-vertical">
+                                                <button type="button" class="btn btn-info disabled">Move <span class="movenum"></span> of 3</button>
+                                                <button type="button" class="btn btn-default compromise">compromise</button>
+                                                <button type="button" class="btn btn-default pickup">pick up loot</button>
+                                                <button type="button" class="btn btn-default drop">drop loot</button>
+                                                <button type="button" class="btn btn-default give">give loot</button>
+                                                <button type="button" class="btn btn-default exchange">exchange loot</button>
+                                                <button type="button" class="btn btn-default move">move here</button>
+                                                <button type="button" class="btn btn-default recover">recover asset</button>
+                                                <button type="button" class="btn btn-default skip" onclick="skipMove()">skip move</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-2" id="tile19">
                             <div class="tile scroll img-responsive">
                                 <div class="tile-wrapper" id="41">
                                     <img src="" class="img-responsive" width="240" height="240" alt="">
@@ -545,9 +717,75 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="col-sm-2" id="tile1">
+                            <div class="tile scroll img-responsive">
+                                <div class="tile-wrapper" id="45">
+                                    <img src="" class="img-responsive" width="240" height="240" alt="">
+                                    <div class="tile-detail">
+                                        <div class="actions">
+                                            <div class="btn-group-vertical">
+                                                <button type="button" class="btn btn-info disabled">Move <span class="movenum"></span> of 3</button>
+                                                <button type="button" class="btn btn-default compromise">compromise</button>
+                                                <button type="button" class="btn btn-default pickup">pick up loot</button>
+                                                <button type="button" class="btn btn-default drop">drop loot</button>
+                                                <button type="button" class="btn btn-default give">give loot</button>
+                                                <button type="button" class="btn btn-default exchange">exchange loot</button>
+                                                <button type="button" class="btn btn-default move">move here</button>
+                                                <button type="button" class="btn btn-default recover">recover asset</button>
+                                                <button type="button" class="btn btn-default skip" onclick="skipMove()">skip move</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="row" id="row6">
-                        <div class="col-sm-2 col-sm-offset-4" id="tile23">
+                        <div class="col-sm-2" id="tile1">
+                            <div class="tile scroll img-responsive">
+                                <div class="tile-wrapper" id="50">
+                                    <img src="" class="img-responsive" width="240" height="240" alt="">
+                                    <div class="tile-detail">
+                                        <div class="actions">
+                                            <div class="btn-group-vertical">
+                                                <button type="button" class="btn btn-info disabled">Move <span class="movenum"></span> of 3</button>
+                                                <button type="button" class="btn btn-default compromise">compromise</button>
+                                                <button type="button" class="btn btn-default pickup">pick up loot</button>
+                                                <button type="button" class="btn btn-default drop">drop loot</button>
+                                                <button type="button" class="btn btn-default give">give loot</button>
+                                                <button type="button" class="btn btn-default exchange">exchange loot</button>
+                                                <button type="button" class="btn btn-default move">move here</button>
+                                                <button type="button" class="btn btn-default recover">recover asset</button>
+                                                <button type="button" class="btn btn-default skip" onclick="skipMove()">skip move</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-2" id="tile1">
+                            <div class="tile scroll img-responsive">
+                                <div class="tile-wrapper" id="51">
+                                    <img src="" class="img-responsive" width="240" height="240" alt="">
+                                    <div class="tile-detail">
+                                        <div class="actions">
+                                            <div class="btn-group-vertical">
+                                                <button type="button" class="btn btn-info disabled">Move <span class="movenum"></span> of 3</button>
+                                                <button type="button" class="btn btn-default compromise">compromise</button>
+                                                <button type="button" class="btn btn-default pickup">pick up loot</button>
+                                                <button type="button" class="btn btn-default drop">drop loot</button>
+                                                <button type="button" class="btn btn-default give">give loot</button>
+                                                <button type="button" class="btn btn-default exchange">exchange loot</button>
+                                                <button type="button" class="btn btn-default move">move here</button>
+                                                <button type="button" class="btn btn-default recover">recover asset</button>
+                                                <button type="button" class="btn btn-default skip" onclick="skipMove()">skip move</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-2" id="tile23">
                             <div class="tile scroll img-responsive">
                                 <div class="tile-wrapper" id="52">
                                     <img src="" class="img-responsive" width="240" height="240" alt="">
@@ -591,6 +829,50 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="col-sm-2" id="tile1">
+                            <div class="tile scroll img-responsive">
+                                <div class="tile-wrapper" id="54">
+                                    <img src="" class="img-responsive" width="240" height="240" alt="">
+                                    <div class="tile-detail">
+                                        <div class="actions">
+                                            <div class="btn-group-vertical">
+                                                <button type="button" class="btn btn-info disabled">Move <span class="movenum"></span> of 3</button>
+                                                <button type="button" class="btn btn-default compromise">compromise</button>
+                                                <button type="button" class="btn btn-default pickup">pick up loot</button>
+                                                <button type="button" class="btn btn-default drop">drop loot</button>
+                                                <button type="button" class="btn btn-default give">give loot</button>
+                                                <button type="button" class="btn btn-default exchange">exchange loot</button>
+                                                <button type="button" class="btn btn-default move">move here</button>
+                                                <button type="button" class="btn btn-default recover">recover asset</button>
+                                                <button type="button" class="btn btn-default skip" onclick="skipMove()">skip move</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-2" id="tile1">
+                            <div class="tile scroll img-responsive">
+                                <div class="tile-wrapper" id="55">
+                                    <img src="" class="img-responsive" width="240" height="240" alt="">
+                                    <div class="tile-detail">
+                                        <div class="actions">
+                                            <div class="btn-group-vertical">
+                                                <button type="button" class="btn btn-info disabled">Move <span class="movenum"></span> of 3</button>
+                                                <button type="button" class="btn btn-default compromise">compromise</button>
+                                                <button type="button" class="btn btn-default pickup">pick up loot</button>
+                                                <button type="button" class="btn btn-default drop">drop loot</button>
+                                                <button type="button" class="btn btn-default give">give loot</button>
+                                                <button type="button" class="btn btn-default exchange">exchange loot</button>
+                                                <button type="button" class="btn btn-default move">move here</button>
+                                                <button type="button" class="btn btn-default recover">recover asset</button>
+                                                <button type="button" class="btn btn-default skip" onclick="skipMove()">skip move</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -599,10 +881,7 @@
                 </div>
             </div>
 
-            <div class="row hud">
-                <div class="col-md-4 col-md-offset-2">Infocon data here</div>
-                <div class="col-md-4">retrieved asset data here</div>
-            </div>
+
 
             <div id="player1">
                 <div class="row">

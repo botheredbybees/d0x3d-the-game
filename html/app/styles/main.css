@@ -108,6 +108,7 @@ float:left;
     width:100%;
     height:100%;
     position: relative;
+    border-radius: 3px;
 }
 
 .tile ximg {
