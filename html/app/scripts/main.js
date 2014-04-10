@@ -67,7 +67,7 @@ function character(name,description,start,filestem) {
     this.filestem = filestem;
 
 }
-// in beta we're only having one player, who will be a social engineer. later we'll add more players and allow for selection of characters from the following list:
+
 var characters = new Array(
 new character('social engineer','A master of manipulation, the social engineer attacks the human factor of security. Why pick a lock when they\'ll open the door for anyone dressed like a delivery person? Why crack a login screen, when the dumpster may have crumpled-up passwords in it? Humans are part of the system, and you know how to hack them to get just about anywhere.','Internet Gateway','social_engineer'),
 new character('war driver','You use wireless to your advantage, gaining access from remote places. War driving is the act of methodically probing for wireless access points left unsecured, and you\'ve mapped out the whole city. Did you know that, from your favorite coffeeshop, a radio antenna at just the right angle gets you access to a network left  exposed on the top floor of the neighboring skyscraper? You do your mobile magic, long distance.','Wireless Router','war_driver'),
@@ -177,14 +177,14 @@ function resizeTiles() {
     });
 }
 
-// for now player1 (our only player for the beta) is a social engineer
+// in beta we're only having one player, who will be a social engineer. later we'll add more players and allow for selection of characters from the following list:
 var player1 = {character: characters[0], name: '', currentNode: 0, xpos: 0, ypos: 0, movenum: 0};
 // set up dummy variables for the other 3 players
 //var player2 = {character: characters[1]; name: '', currentNode: 0, xpos: 0, ypos: 0, movenum: 0};
 //var player3 = {character: characters[2]; name: '', currentNode: 0, xpos: 0, ypos: 0, movenum: 0};
 //var player4 = {character: characters[3]; name: '', currentNode: 0, xpos: 0, ypos: 0, movenum: 0};
 players = [player1]; // only one player for now
-//var players = [player1, player2, player3, player4];
+//if you wanted 4 players you would create: var players = [player1, player2, player3, player4];
 
 $( document ).ready(function() {
     shuffle();
@@ -192,16 +192,14 @@ $( document ).ready(function() {
     for(var i=0;i<network.length;++i) {
         if (network[i].compromised === true) {
             $('#tile'+network[i].y+network[i].x).find('img').attr('src','images/tiles/'+network[i].image+'_compromised.png');
-            //$('#'+network[i].x+network[i].y).css('background-image', 'url(images/tiles/'+network[i].image+'_compromised.png');
         } else {
             $('#tile'+network[i].y+network[i].x).find('img').attr('src','images/tiles/'+network[i].image+'.png');
-            //$('#'+network[i].x+network[i].y).css('background-image', 'url(images/tiles/'+network[i].image+'.png');
         }
         $('#tile'+network[i].y+network[i].x).find('img').attr('alt',network[i].name);
     }
     // show the player icons
     for(i=0;i<players.length;++i) {
-        showplayer(i,players[i].xpos,players[i].ypos);
+        showPlayer(i,players[i].xpos,players[i].ypos);
     }
     // turn on tooltips
     $('.asset').tooltip();
@@ -228,13 +226,26 @@ $( document ).ready(function() {
 function showTakeOrMove(x,y) {
 	// look for a tile at the x,y grid position
 	// if compromised show the 'move here' button, otherwise show the 'compromise' button
-	var tilenum = board[y][x];
-	if (tilenum > 0) { // there is a tile here
-		//console.log('north tilenum: '+tilenum+' name: '+network[tilenum].name);
-		if(network[tilenum].compromised === true) {
+    if (x>5 || y>5) {
+        // we're off the grid
+        return;
+    }
+	var nodeNum = board[y][x];
+	if (nodeNum > 0) { // there is a tile here
+		//console.log('north nodeNum: '+nodeNum+' name: '+network[nodeNum].name);
+		if(network[nodeNum].compromised === true) {
 			$('#'+y+x+' button.move').css('display','block');
+            // hide the 'compromise' button (in case we just compromised it during the last move)
+            $('#'+y+x+' button.compromise').css('display','none'); 
+            $('#'+y+x+' button.move').click(function() {
+              movePlayer(x,y);
+            });
 		} else {
 			$('#'+y+x+' button.compromise').css('display','block');
+            $('#'+y+x+' button.move').css('display','none');
+            $('#'+y+x+' button.compromise').click(function() {
+              compromise(nodeNum,x,y);
+            });
 		}
 		// show that this is a possible target
 		$('#'+y+x).css('background-color',BACKGROUND_COLOUR);
@@ -242,6 +253,23 @@ function showTakeOrMove(x,y) {
 		activateTile(y.toString()+x.toString());
 	}
 }
+
+function movePlayer(x,y) {
+    // move the player to a new tile
+    showPlayer(currentplayer,x,y);
+    incrementMove();
+}
+
+function compromise(nodeNum,x,y) {
+    // compromise this node
+    network[nodeNum].compromised = true;
+    $('#tile'+network[nodeNum].y+network[nodeNum].x).find('img').attr('src','images/tiles/'+network[nodeNum].image+'_compromised.png');
+    // update the move number
+    incrementMove();
+    // reset the buttons on this tile
+    showTakeOrMove(x,y);
+}
+
 function activateTile(id) {
 	// enable the slide up menu for a tile
 	$('#'+id).parent().hover(
@@ -253,18 +281,9 @@ function activateTile(id) {
 		}
 	);
 }
-function showplayer(playernum,xpos,ypos) {
-	// update the move number
-	players[playernum].movenum += 1;
-	
-	if (players[playernum].movenum > 3) {
-		// if movenum is over 3, move on to the loot phase
-		getLoot();
-	} else {
-		// update the slide up menus
-		$('.movenum').text(players[playernum].movenum);
-	}
+function showPlayer(playernum,xpos,ypos) {
 	// move the player to a new position on the board grid
+    console.log('showplayer: '+playernum+' '+xpos+' '+ypos);
 	var image = $('#icon'+playernum);
 	image.remove();
 	$('#'+ypos+xpos).append(image);
@@ -279,7 +298,7 @@ function showplayer(playernum,xpos,ypos) {
 	$('.tile').unbind('mouseenter mouseleave');
 
 	// set up buttons for the current tile
-	var id = ypos.toString() + xpos.toString();
+	var id = ypos.toString() + xpos.toString(); 
 	$('#'+id+' button.drop').css('display','block'); // should really check to see if player has any loot to drop first
 	$('#'+id+' button.skip').css('display','block');
 	// show that this is a possible target
@@ -310,7 +329,7 @@ function showplayer(playernum,xpos,ypos) {
 	// set up any other tiles for the current character type (eg show 'move' and 'skip' on any compromised tiles for the social engineer)
 }
 
-function skipMove() {
+function incrementMove() {
 	// player has clicked on the 'skip' button
 	players[currentplayer].movenum += 1;
 	$('.movenum').text(players[currentplayer].movenum);
