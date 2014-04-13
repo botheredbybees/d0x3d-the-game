@@ -2,8 +2,8 @@
 // 
 //  I've split this file up into the following sections to make it a bit easier to find the bits I'm interested in...
 // DATA STRUCTURES - definitions of the various objects, arrays and global variables used by the game
-// SETUP - initialisation routines run when the game starts
 // PLAY - the routines used during game play
+// SETUP - initialisation routines run when the game starts
 //
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -115,6 +115,146 @@ var player1 = {character: characters[0], name: '', currentNode: 0, xpos: 0, ypos
 
 players = [player1]; // only one player for now
 //if you wanted 4 players you would create: var players = [player1, player2, player3, player4];
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+// 
+// PLAY - the routines used during game play
+//
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function getLoot() {
+	players[currentplayer].movenum = 0;
+	// get some new loot
+	$('#lo0t').modal('show');
+}
+function incrementMove() {
+	// player has clicked on the 'skip' button
+	players[currentplayer].movenum += 1;
+	if (players[currentplayer].movenum > 3) {
+		// move on to the lo0t distribution phase of play
+		getLoot();
+	}
+	$('.movenum').text(players[currentplayer].movenum);
+}
+
+function activateTile(id) {
+	// enable the slide up menu for a tile
+	$('#'+id).parent().hover(
+		function () {
+			$(this).find('.tile-detail').stop().animate({bottom:0}, 500, 'easeOutCubic');
+		},
+		function () {
+			$(this).find('.tile-detail').stop().delay(100).animate({bottom: ($(this).height() * -1) }, 500, 'easeOutCubic');
+		}
+	);
+}
+
+
+function showTakeOrMove(x,y) {
+	// look for a tile at the x,y grid position
+	// if compromised show the 'move here' button, otherwise show the 'compromise' button
+	// add the relevant action to the button
+    if (x>5 || y>5 || x<0 || y<0) {
+        // we're off the grid, don't bother trying
+        return;
+    }
+	var nodeNum = board[y][x];
+	if (nodeNum > 0) { // there is a tile here
+		//console.log('north nodeNum: '+nodeNum+' name: '+network[nodeNum].name);
+		if(network[nodeNum].compromised === true) {
+			$('#'+y+x+' button.move').css('display','block');
+            // hide the 'compromise' button (in case we just compromised it during the last move)
+            $('#'+y+x+' button.compromise').css('display','none');
+            $('#'+y+x+' button.move').click(function() {
+                movePlayer(x,y);
+            });
+		} else {
+			$('#'+y+x+' button.compromise').css('display','block');
+            $('#'+y+x+' button.move').css('display','none');
+            $('#'+y+x+' button.compromise').click(function() {
+                compromise(nodeNum,x,y);
+            });
+		}
+		// show that this is a possible target
+		$('#'+y+x).css('background-color',BACKGROUND_COLOUR);
+		// turn on the slide up menu
+		activateTile(y.toString()+x.toString());
+	}
+}
+
+
+function compromise(nodeNum,x,y) {
+    // compromise this node
+    network[nodeNum].compromised = true;
+    $('#tile'+network[nodeNum].y+network[nodeNum].x).find('img').attr('src','images/tiles/'+network[nodeNum].image+'_compromised.png');
+    // update the move number
+    incrementMove();
+    // reset the buttons on this tile
+    showTakeOrMove(x,y);
+}
+function showPlayer(playernum,xpos,ypos) {
+	// show the player at a given position on the board grid and set up the current and surrounding tiles ready for action
+	var image = $('#icon'+playernum);
+	image.remove();
+	$('#'+ypos+xpos).append(image);
+	
+	// hide all buttons
+	$('button').css('display','none');
+	// turn the move number display button back on
+	$('.btn-info').css('display','block');
+	// turn off any background colours (used to show which tiles are possible targets)
+	$('.tile-wrapper').css('background-color','none');
+	// turn off any hover events
+	$('.tile').unbind('mouseenter mouseleave');
+
+	// set up buttons for the current tile
+	var id = ypos.toString() + xpos.toString();
+	$('#'+id+' button.drop').css('display','block'); // should really check to see if player has any loot to drop first
+	$('#'+id+' button.skip').css('display','block');
+	// show that this is a possible target
+	$('#'+id).css('background-color',BACKGROUND_COLOUR);
+	// turn on the slide up menu
+	activateTile(id);
+	// if there's another character here show the 'give' and 'swap' buttons
+	// if there's any loot on the tile show the 'pick up' button
+	// if tile has an asset and that asset has not already been retrieved show the 'retrieve' button
+
+	// set up buttons for the tile to the north
+	if(ypos > 0) {
+		$('#'+(ypos-1)+xpos+' button.skip').css('display','block');
+		// if compromised show the 'move here' button, otherwise show the 'compromise' button
+		showTakeOrMove(xpos,ypos-1);
+	}
+
+	if(ypos < 5) {
+		// set up buttons for the tile to the south
+		$('#'+(ypos+1)+xpos+' button.skip').css('display','block');
+		showTakeOrMove(xpos,ypos+1);
+	}
+
+	if(xpos > 0) {
+		// set up buttons for the tile to the east
+		$('#'+ypos+(xpos-1)+' button.skip').css('display','block');
+		showTakeOrMove(xpos-1,ypos);
+	}
+
+	if(xpos < 5) {
+		// set up buttons for the tile to the west
+		$('#'+ypos+(xpos+1)+' button.skip').css('display','block');
+		showTakeOrMove(xpos+1,ypos);
+	}
+
+	// set up any other tiles for the current character type (eg show 'move' and 'skip' on any compromised tiles for the social engineer)
+	
+}
+function movePlayer(x,y) {
+    // move the player to a new tile. 
+	// This function is called during game play for the currently active player but the real action happens in showPlayer (which is also called when the board is first set up for each of the player tokens being used)
+    showPlayer(currentplayer,x,y);
+    incrementMove();
+}
+
+
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 // 
@@ -122,6 +262,18 @@ players = [player1]; // only one player for now
 //
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
+function shuffle(cards) {
+	// shuffle the elements in the array
+	var target, temp;
+	for(var i=0; i<cards.length; ++i) {
+		// for each card, find a random target in the array
+		target=Math.floor((Math.random()*cards.length));
+		// and swap our card with the target card
+		temp = cards[target];
+		cards[target] = cards[i];
+		cards[i] = temp;
+	}
+}
 function setup() {
 	// shuffle the loot
 	shuffle(lo0t);
@@ -189,14 +341,14 @@ function setup() {
 		// give each player 2 lo0t cards
 		// we need to find the first 2 'good' cards, ignoring any detection cards
 		for (var j=0;j<lo0t.length && players[i].lo0t.length < 2;++j) {
-			if(lo0t[j].substring(0, 9) != "detection") {
+			if(lo0t[j].substring(0, 9) !== 'detection') {
 				// got a good card
-				x = lo0t.splice(j, 1);
+				var x = lo0t.splice(j, 1);
 				players[i].lo0t.push(x[0]);
 			}
 		}
 		// find the player start position in the grid
-		for(var j=0; j<network.length;++j) {
+		for(j=0; j<network.length;++j) {
 			if (network[j].name === players[i].character.startingNode) {
 				//console.log('player'+i+' character is at the '+network[j].name);
 				players[i].currentNode = j;
@@ -213,18 +365,6 @@ function setup() {
 	}
 }
 
-function shuffle(cards) {
-	// shuffle the elements in the array
-	var target, temp;
-	for(var i=0; i<cards.length; ++i) {
-		// for each card, find a random target in the array
-		target=Math.floor((Math.random()*cards.length));
-		// and swap our card with the target card
-		temp = cards[target];
-		cards[target] = cards[i];
-		cards[i] = temp;
-	}
-}
 
 function resizeTiles() {
     $( '.tile' ).each(function( ) {
@@ -247,7 +387,7 @@ $( document ).ready(function() {
     for(i=0;i<players.length;++i) {
         showPlayer(i,players[i].xpos,players[i].ypos);
 		var lo0t = players[i].lo0t;
-		for(j=0;j<lo0t.length;++j) {
+		for(var j=0;j<lo0t.length;++j) {
 			$('#p'+(i+1)+'loot'+j).html('<img src="images/lo0t/lo0t.'+lo0t[j]+'.png" class="img-responsive" alt="'+lo0t[j]+'">');
 		}
     }
@@ -272,139 +412,3 @@ $( document ).ready(function() {
 	incrementMove();
 });
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////
-// 
-// PLAY - the routines used during game play
-//
-/////////////////////////////////////////////////////////////////////////////////////////////////////
-
-function showTakeOrMove(x,y) {
-	// look for a tile at the x,y grid position
-	// if compromised show the 'move here' button, otherwise show the 'compromise' button
-	// add the relevant action to the button
-    if (x>5 || y>5 || x<0 || y<0) {
-        // we're off the grid, don't bother trying
-        return;
-    }
-	var nodeNum = board[y][x];
-	if (nodeNum > 0) { // there is a tile here
-		//console.log('north nodeNum: '+nodeNum+' name: '+network[nodeNum].name);
-		if(network[nodeNum].compromised === true) {
-			$('#'+y+x+' button.move').css('display','block');
-            // hide the 'compromise' button (in case we just compromised it during the last move)
-            $('#'+y+x+' button.compromise').css('display','none'); 
-            $('#'+y+x+' button.move').click(function() {
-              movePlayer(x,y);
-            });
-		} else {
-			$('#'+y+x+' button.compromise').css('display','block');
-            $('#'+y+x+' button.move').css('display','none');
-            $('#'+y+x+' button.compromise').click(function() {
-              compromise(nodeNum,x,y);
-            });
-		}
-		// show that this is a possible target
-		$('#'+y+x).css('background-color',BACKGROUND_COLOUR);
-		// turn on the slide up menu
-		activateTile(y.toString()+x.toString());
-	}
-}
-
-function movePlayer(x,y) {
-    // move the player to a new tile. 
-	// This function is called during game play for the currently active player but the real action happens in showPlayer (which is also called when the board is first set up for each of the player tokens being used)
-    showPlayer(currentplayer,x,y);
-    incrementMove();
-}
-
-function compromise(nodeNum,x,y) {
-    // compromise this node
-    network[nodeNum].compromised = true;
-    $('#tile'+network[nodeNum].y+network[nodeNum].x).find('img').attr('src','images/tiles/'+network[nodeNum].image+'_compromised.png');
-    // update the move number
-    incrementMove();
-    // reset the buttons on this tile
-    showTakeOrMove(x,y);
-}
-
-function activateTile(id) {
-	// enable the slide up menu for a tile
-	$('#'+id).parent().hover(
-		function () {
-			$(this).find('.tile-detail').stop().animate({bottom:0}, 500, 'easeOutCubic');
-		},
-		function () {
-			$(this).find('.tile-detail').stop().delay(100).animate({bottom: ($(this).height() * -1) }, 500, 'easeOutCubic');
-		}
-	);
-}
-function showPlayer(playernum,xpos,ypos) {
-	// show the player at a given position on the board grid and set up the current and surrounding tiles ready for action
-	var image = $('#icon'+playernum);
-	image.remove();
-	$('#'+ypos+xpos).append(image);
-	
-	// hide all buttons
-	$('button').css('display','none');
-	// turn the move number display button back on
-	$('.btn-info').css('display','block');
-	// turn off any background colours (used to show which tiles are possible targets)
-	$('.tile-wrapper').css('background-color','none');
-	// turn off any hover events
-	$('.tile').unbind('mouseenter mouseleave');
-
-	// set up buttons for the current tile
-	var id = ypos.toString() + xpos.toString(); 
-	$('#'+id+' button.drop').css('display','block'); // should really check to see if player has any loot to drop first
-	$('#'+id+' button.skip').css('display','block');
-	// show that this is a possible target
-	$('#'+id).css('background-color',BACKGROUND_COLOUR);
-	// turn on the slide up menu
-	activateTile(id);
-	// if there's another character here show the 'give' and 'swap' buttons
-	// if there's any loot on the tile show the 'pick up' button
-	// if tile has an asset and that asset has not already been retrieved show the 'retrieve' button
-
-	// set up buttons for the tile to the north
-	if(ypos > 0) {
-		$('#'+(ypos-1)+xpos+' button.skip').css('display','block');
-		// if compromised show the 'move here' button, otherwise show the 'compromise' button
-		showTakeOrMove(xpos,ypos-1);
-	}
-
-	if(ypos < 5) {
-		// set up buttons for the tile to the south
-		$('#'+(ypos+1)+xpos+' button.skip').css('display','block');
-		showTakeOrMove(xpos,ypos+1);
-	}
-
-	if(xpos > 0) {
-		// set up buttons for the tile to the east
-		$('#'+ypos+(xpos-1)+' button.skip').css('display','block');
-		showTakeOrMove(xpos-1,ypos);
-	}
-
-	if(xpos < 5) {
-		// set up buttons for the tile to the west
-		$('#'+ypos+(xpos+1)+' button.skip').css('display','block');
-		showTakeOrMove(xpos+1,ypos);
-	}
-
-	// set up any other tiles for the current character type (eg show 'move' and 'skip' on any compromised tiles for the social engineer)
-	
-}
-
-function incrementMove() {
-	// player has clicked on the 'skip' button
-	players[currentplayer].movenum += 1;
-	if (players[currentplayer].movenum > 3) {
-		// move on to the lo0t distribution phase of play
-		getLoot();
-	}
-	$('.movenum').text(players[currentplayer].movenum);
-}
-function getLoot() {
-	players[currentplayer].movenum = 0;
-	// get some new loot
-	$('#lo0t').modal('show');
-}
