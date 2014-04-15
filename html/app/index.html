@@ -33,8 +33,7 @@
                 <h1><span class="red">[</span>d0x3d!<span class="red">]</span></h1>
             </div>
                         <div class="row hud">
-                <div class="col-md-2" id="loot">
-                    <img src="images/backs/back_lo0t.png" class="img-responsive" width="240" height="176" alt="lo0t cards">
+                <div class="col-md-2">
                 </div>
 
                 <div class="col-md-1">
@@ -52,8 +51,7 @@
                     <img src="images/infocon/infocon0.png" class="img-responsive" width="720" height="299" alt="infocon">
                 </div>
 
-                <div class="col-md-2" id="patch">
-                    <img src="images/backs/back_patch.png" class="img-responsive" width="240" height="176" alt="patch cards">
+                <div class="col-md-2">
                 </div>
             </div>
 
@@ -919,13 +917,51 @@
 		  <div class="modal-dialog">
 			<div class="modal-content">
 			  <div class="modal-header">
-				<h1 class="modal-title"><span class="red">[</span>lo0t!<span class="red">]</span></h1>
+				<h1 class="modal-title"> Click to pick up new <span class="red">[</span>lo0t!<span class="red">]</span></h1>
 			  </div>
 			  <div class="modal-body">
-				<p>One fine body&hellip;</p>
+                <div id="newLoot">
+				    <div class="row">
+                        <div class="col-md-4 col-md-offset-1">
+                            <img src="images/backs/back_lo0t.png" id="newloot1" class="img-responsive" width="176" height="240" alt="lo0t card">
+                        </div>
+                        <div class="col-md-4 col-md-offset-2">
+                            <img src="images/backs/back_lo0t.png" id="newloot2" class="img-responsive" width="176" height="240" alt="lo0t card">
+                        </div>
+                    </div>
+                </div>
 			  </div>
 			  <div class="modal-footer">
-				some instructions
+				
+                <div id="playerCards">
+                    <div class="row">
+                        <div class="col-md-2">
+                        <h2>Your lo0t:</h2> 
+                        </div>
+                        <div class="col-md-2 p_loot0">
+                        </div>
+                        <div class="col-md-2 p_loot1">
+                        </div>
+                        <div class="col-md-2 p_loot2">
+                        </div>
+                        <div class="col-md-2 p_loot3">
+                        </div>
+                        <div class="col-md-2 p_loot4">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2 col-md-offset-2 p_loot5">
+                        </div>
+                        <div class="col-md-2 p_loot6">
+                        </div>
+                        <div class="col-md-2 p_loot7">
+                        </div>
+                        <div class="col-md-2 p_loot8">
+                        </div>
+                        <div class="col-md-2 p_loot9">
+                        </div>
+                    </div>
+                </div>
 			  </div>
 			</div><!-- /.modal-content -->
 		  </div><!-- /.modal-dialog -->

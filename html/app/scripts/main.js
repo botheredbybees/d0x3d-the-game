@@ -115,15 +115,45 @@ var player1 = {character: characters[0], name: '', currentNode: 0, xpos: 0, ypos
 
 players = [player1]; // only one player for now
 //if you wanted 4 players you would create: var players = [player1, player2, player3, player4];
+
+
+
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 // 
 // PLAY - the routines used during game play
 //
 /////////////////////////////////////////////////////////////////////////////////////////////////////
-
+function grabLoot(wherefrom) {	
+	var loot = lo0t.pop();
+	var newlootpos = players[currentplayer].lo0t.length;
+	if(loot.substring(0, 9) !== 'detection') {
+		// got a good card
+	    $(wherefrom).attr('src','images/lo0t/lo0t.'+loot+'.png').fadeOut(1000);
+	    $('.p_loot'+newlootpos).html('<img src="images/lo0t/lo0t.'+loot+'.png" class="img-responsive" alt="'+loot+'">').fadeIn(1500);
+		players[currentplayer].lo0t.push(loot);
+	} else {
+		// intrusion detected!
+		// TODO add code for handling the various detection cards
+	}
+	// TODO add code for initiating the next phase of play: patch
+}
+function showPlayerLoot() {
+	var lo0t = players[currentplayer].lo0t;
+	for(var j=0;j<lo0t.length;++j) {
+		$('.p_loot'+j).html('<img src="images/lo0t/lo0t.'+lo0t[j]+'.png" class="img-responsive" alt="'+lo0t[j]+'">');
+	}
+}
 function getLoot() {
-	players[currentplayer].movenum = 0;
+	players[currentplayer].movenum = 0;	
+    $('#newloot1').click(function() {
+    	grabLoot('#newloot1');
+    });
+    $('#newloot2').click(function() {
+    	grabLoot('#newloot2');
+    });
 	// get some new loot
+	showPlayerLoot();
 	$('#lo0t').modal('show');
 }
 function incrementMove() {
@@ -219,6 +249,7 @@ function showPlayer(playernum,xpos,ypos) {
 	// if tile has an asset and that asset has not already been retrieved show the 'retrieve' button
 
 	// set up buttons for the tile to the north
+	// TODO figure out why this isn't working if the internet gateway starts at 0,3 (0,2 doesn't get set as a possible target)
 	if(ypos > 0) {
 		$('#'+(ypos-1)+xpos+' button.skip').css('display','block');
 		// if compromised show the 'move here' button, otherwise show the 'compromise' button
@@ -243,7 +274,7 @@ function showPlayer(playernum,xpos,ypos) {
 		showTakeOrMove(xpos+1,ypos);
 	}
 
-	// set up any other tiles for the current character type (eg show 'move' and 'skip' on any compromised tiles for the social engineer)
+	// TODO set up any other tiles for the current character type (eg show 'move' and 'skip' on any compromised tiles for the social engineer)
 	
 }
 function movePlayer(x,y) {
