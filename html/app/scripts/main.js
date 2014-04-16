@@ -301,7 +301,7 @@ function showPlayer(playernum,xpos,ypos) {
 function movePlayer(x,y) {
     // move the player to a new tile. 
 	// This function is called during game play for the currently active player but the real action happens in showPlayer (which is also called when the board is first set up for each of the player tokens being used)
-    showPlayer(currentplayer,x,y);
+    showPlayer(currentplayer,x,y);    
     incrementMove();
 }
 
@@ -470,10 +470,10 @@ $( document ).ready(function() {
 
 	// set up the loot cards for clicking		
   $('#newloot1').click(function() {
-  	grabLoot('#newloot1');
+		grabLoot('#newloot1');
   });
   $('#newloot2').click(function() {
-  	grabLoot('#newloot2');
+		grabLoot('#newloot2');
   });
 	
 	// start the player off on the first move
