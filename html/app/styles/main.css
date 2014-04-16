@@ -215,3 +215,6 @@ overflow: hidden;
     bottom: 5%;
     left: 5%;
 }
+#newLoot {
+    min-height: 240px;
+}
