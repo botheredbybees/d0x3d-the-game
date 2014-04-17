@@ -173,10 +173,27 @@ function showPlayerLoot() {
 }
 function getLoot() {
 	players[currentplayer].movenum = 0;
+	// hide the loot modal (in case we're being called from a drop loot move)
+	$('#lo0t').modal('hide');
 	// get some new loot
 	showPlayerLoot();
+	// show the new loot cards
 	$('#newloot1, #newloot2').attr('src','images/backs/back_lo0t.png').show();
+	$('#newLoot').show();
+	// show the loot modal
+	$('#lootPrefix').text('New');
+	$('#lootInstructions').hide();
 	$('#lo0t').modal('show');
+}
+function dropLoot(nodenum) {
+	// drop some loot on this node
+	showPlayerLoot();
+	$('#newLoot').hide();
+	// TODO show some instructions and add code to trap keyclicks on the player's loot cards
+	$('#lootPrefix').text('Drop');
+	$('#lootInstructions').html('<div class="text-center">Click on a loot card to drop it here, or <button class="btn close" data-dismiss="modal">Cancel</button></div>').show();
+	$('#lo0t').modal('show');
+	incrementMove();
 }
 function incrementMove() {
 	// player has clicked on the 'skip' button
@@ -265,7 +282,13 @@ function showPlayer(playernum,xpos,ypos) {
 
 	// set up buttons for the current tile
 	var id = ypos.toString() + xpos.toString();
-	$('#'+id+' button.drop').css('display','block'); // TODO check to see if player has any loot to drop first
+	if (players[playernum].lo0t.length) { // if player has any loot to drop 
+		$('#'+id+' button.drop').css('display','block');
+		$('#'+id+' button.drop').unbind('click');
+		$('#'+id+' button.drop').click(function() {
+        dropLoot(board[ypos][xpos]);
+    }); 
+	}
 	// TODO add code to trap clicks and display the 'drop loot' dialogue
 	$('#'+id+' button.skip').css('display','block');
 	// show that this is a possible target
