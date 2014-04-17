@@ -26,7 +26,7 @@ var players = [];
 
 // set up the default board: a 6x6 array of 2, 4, 6, 6, 4, 2 cards
 // each element of the array has either a -1 (no tile) or a non-negative integer corresponding to the network array index corresponding to that node
-// for future versions there may be other layouts
+// TODO for future versions there create other layouts, assign these for different difficulty levels, or as a progression when more than one game is played
 var board = [[-1,-1,0,1,-1,-1],[-1,2,3,4,5,-1],[6,7,8,9,10,11],[12,13,14,15,16,17],[-1,18,19,20,21,-1],[-1,-1,22,23,-1,-1]];
 function node(name,image,asset)
 {
@@ -44,7 +44,7 @@ function node(name,image,asset)
 }
 
 var network = new Array(new node('Backup File Server', 'node_backup_file_server','intellectual property'),
-new node('Certificate Sevices', 'node_cert_sevices','authentication credentials'),
+new node('Certificate Sevices', 'node_cert_services','authentication credentials'),
 new node('Chat Server', 'node_chat_server'),
 new node('Laptop Client', 'node_client_laptop'),
 new node('Mobile Client', 'node_client_mobile'),
@@ -114,6 +114,7 @@ new character('cryptanalyst','Crypto is hard to get right. You\'ve picked a much
 new character('malware writer','When it comes to viruses, trojan horses, and worms you\'re the best of the best. An artist, a maestro, a poet ... that is, if poems could stop a car or explode a pacemaker. Like a nasty cold, your malware spreads quickly across the network.','Primary DNS','malware_writer')
 );
 
+// TODO allow players to choose a character (in harder modes, randomly assign a character type?)
 // in beta we're only having one player, who will be a social engineer. later we'll add more players and allow for selection of characters from the following list:
 var player1 = {character: characters[0], name: '', currentNode: 0, xpos: 0, ypos: 0, movenum: 0, lo0t: []};
 //var player2 = {character: characters[1]; name: '', currentNode: 0, xpos: 0, ypos: 0, movenum: 0, lo0t: []};
@@ -121,6 +122,7 @@ var player1 = {character: characters[0], name: '', currentNode: 0, xpos: 0, ypos
 //var player4 = {character: characters[3]; name: '', currentNode: 0, xpos: 0, ypos: 0, movenum: 0, lo0t: []};
 
 players = [player1]; // only one player for now
+// TODO code for more than one player 1) using the same comptuer 2) using networked play
 //if you wanted 4 players you would create: var players = [player1, player2, player3, player4];
 
 
@@ -208,18 +210,21 @@ function showTakeOrMove(x,y) {
         return;
     }
 	var nodeNum = board[y][x];
-	if (nodeNum > 0) { // there is a tile here
+	if (nodeNum >= 0) { // there is a tile here
 		//console.log('north nodeNum: '+nodeNum+' name: '+network[nodeNum].name);
+		// turn off any click events which might already exist
 		if(network[nodeNum].compromised === true) {
 			$('#'+y+x+' button.move').css('display','block');
             // hide the 'compromise' button (in case we just compromised it during the last move)
             $('#'+y+x+' button.compromise').css('display','none');
+            $('#'+y+x+' button.move').unbind('click');
             $('#'+y+x+' button.move').click(function() {
                 movePlayer(x,y);
             });
 		} else {
 			$('#'+y+x+' button.compromise').css('display','block');
             $('#'+y+x+' button.move').css('display','none');
+            $('#'+y+x+' button.compromise').unbind('click');
             $('#'+y+x+' button.compromise').click(function() {
                 compromise(nodeNum,x,y);
             });
@@ -246,6 +251,8 @@ function showPlayer(playernum,xpos,ypos) {
 	var image = $('#icon'+playernum);
 	image.remove();
 	$('#'+ypos+xpos).append(image);
+	players[playernum].xpos = xpos;
+	players[playernum].ypos = ypos;
 	
 	// hide all buttons
 	$('button').css('display','none');
@@ -270,7 +277,6 @@ function showPlayer(playernum,xpos,ypos) {
 	// if tile has an asset and that asset has not already been retrieved show the 'retrieve' button
 
 	// set up buttons for the tile to the north
-	// TODO figure out why this isn't working if the internet gateway starts at 0,3 (0,2 doesn't get set as a possible target)
 	if(ypos > 0) {
 		$('#'+(ypos-1)+xpos+' button.skip').css('display','block');
 		// if compromised show the 'move here' button, otherwise show the 'compromise' button
@@ -295,8 +301,40 @@ function showPlayer(playernum,xpos,ypos) {
 		showTakeOrMove(xpos+1,ypos);
 	}
 
-	// TODO set up any other tiles for the current character type (eg show 'move' and 'skip' on any compromised tiles for the social engineer)
-	
+	// TODO set up any other tiles for the other character types
+	switch(players[playernum].character.name)
+	{
+	case 'social engineer':
+	  // as one action, move to any compromised tile
+	  for(var i=0; i<network.length;++i) {
+	  	if(network[i].compromised == true) {
+	  		ypos = network[i].y;
+	  		xpos = network[i].x;
+	  		if((players[playernum].xpos != xpos) || (players[playernum].ypos != ypos)) { // only do this for tiles the player is not currently occupying
+					$('#'+ypos+xpos+' button.skip').css('display','block');
+					showTakeOrMove(xpos,ypos);	  		
+				}
+	  	}
+	  }
+	  break;
+	case 'war driver':
+	  // as one action, give or exchange a card to a player anywhere on the network
+	  break;
+	case 'the insider':
+	  // as one action, compromise two adjacent tiles 
+	  break;
+	case 'botmaster':
+	  // as one action, give or exhcnge two cards
+	  break;
+	case 'cryptanalyst':
+	  // as one action, move or compromise diagonally
+	  break;
+	case 'malware writer':
+	  // as one action, move across two compromised tiles
+	  break;
+	}
+
+
 }
 function movePlayer(x,y) {
     // move the player to a new tile. 
@@ -444,12 +482,12 @@ $( document ).ready(function() {
         $('#tile'+network[i].y+network[i].x).find('img').attr('alt',network[i].name);
     }
     // show the player icons and their lo0t
-    for(i=0;i<players.length;++i) {
-        showPlayer(i,players[i].xpos,players[i].ypos);
-		var lo0t = players[i].lo0t;
-		for(var j=0;j<lo0t.length;++j) {
-			$('#p'+(i+1)+'loot'+j).html('<img src="images/lo0t/lo0t.'+lo0t[j]+'.png" class="img-responsive" alt="'+lo0t[j]+'">');
-		}
+    for(i=players.length-1;i>=0;--i) { // show the first player last, so that the menus are all set up for them correctly
+      showPlayer(i,players[i].xpos,players[i].ypos);
+			var lo0t = players[i].lo0t;
+			for(var j=0;j<lo0t.length;++j) {
+				$('#p'+(i+1)+'loot'+j).html('<img src="images/lo0t/lo0t.'+lo0t[j]+'.png" class="img-responsive" alt="'+lo0t[j]+'">');
+			}
     }
     // turn on tooltips
     $('.asset').tooltip();
