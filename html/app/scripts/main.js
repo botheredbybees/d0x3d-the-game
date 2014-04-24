@@ -488,8 +488,15 @@ function setup() {
 
 
 function resizeTiles() {
+	var tileheight;
     $( '.tile' ).each(function( ) {
         $( this ).css('height',$(this).css('width'));
+        tileheight = parseInt($(this).css('height'));
+    });
+    // reposition the dropped loot divs    
+    $( '.tilecards1, .tilecards2' ).each(function( ) {
+    	console.log('setting tilecards top to '+(15-tileheight));
+        $( this ).css('top',(15-tileheight)+"px");
     });
 }
 

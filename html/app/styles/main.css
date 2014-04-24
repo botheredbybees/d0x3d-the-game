@@ -218,3 +218,13 @@ overflow: hidden;
 #newLoot {
     min-height: 240px;
 }
+.tilecards1, .tilecards2 {
+    position: relative;
+    width: 10%;
+}
+.tilecards1 {
+    left: 5%;
+}
+.tilecards2 {
+    right: 5%;
+}
