@@ -163,12 +163,19 @@ function grabLoot(wherefrom) {
 	}
 	// TODO add code for initiating the next phase of play: patch
 }
-function showPlayerLoot() {
+function showPlayerLoot(targetnode) {
 	//$('.modal-title').html('New <span class="red">[</span>lo0t!<span class="red">]</span>');
 	players[currentplayer].lo0t.sort();
 	var lo0t = players[currentplayer].lo0t;
 	for(var j=0;j<lo0t.length;++j) {
-		$('.p_loot'+j).html('<img src="images/lo0t/lo0t.'+lo0t[j]+'.png" class="img-responsive" alt="'+lo0t[j]+'">');
+		$('.p_loot'+j).html('<img src="images/lo0t/lo0t.'+lo0t[j]+'.png" id="lootimg'+j+'" data-index="'+j+'" class="img-responsive" alt="'+lo0t[j]+'">');
+		if (targetnode > -1) { // showplayer has been called from the droploot activity
+			$('#lootimg'+j).unbind('click');			
+            //console.log('dropThis('+j+', '+targetnode+')');
+			$('#lootimg'+j).click(function() {
+                dropThis(targetnode,j);
+            });
+		}
 	}
 }
 function getLoot() {
@@ -176,24 +183,14 @@ function getLoot() {
 	// hide the loot modal (in case we're being called from a drop loot move)
 	$('#lo0t').modal('hide');
 	// get some new loot
-	showPlayerLoot();
-	// show the new loot cards
+	showPlayerLoot(-1);
+	// show the new loot cards, but don't allow for any interaction
 	$('#newloot1, #newloot2').attr('src','images/backs/back_lo0t.png').show();
 	$('#newLoot').show();
 	// show the loot modal
 	$('#lootPrefix').text('New');
 	$('#lootInstructions').hide();
 	$('#lo0t').modal('show');
-}
-function dropLoot(nodenum) {
-	// drop some loot on this node
-	showPlayerLoot();
-	$('#newLoot').hide();
-	// TODO show some instructions and add code to trap keyclicks on the player's loot cards
-	$('#lootPrefix').text('Drop');
-	$('#lootInstructions').html('<div class="text-center">Click on a loot card to drop it here, or <button class="btn close" data-dismiss="modal">Cancel</button></div>').show();
-	$('#lo0t').modal('show');
-	incrementMove();
 }
 function incrementMove() {
 	// player has clicked on the 'skip' button
@@ -204,7 +201,53 @@ function incrementMove() {
 	}
 	$('.movenum').text(players[currentplayer].movenum);
 }
-
+function decrementMove() {
+	// cancel this move
+	players[currentplayer].movenum -= 1;
+	$('.movenum').text(players[currentplayer].movenum);
+}
+function showLootOnNode(targetnode) {
+	// clear current images
+	var col1 = $('#tile'+network[targetnode].y+network[targetnode].x).find('.tilecards1')
+	col1.html('');	
+	var col2 = $('#tile'+network[targetnode].y+network[targetnode].x).find('.tilecards2')
+	col2.html('');
+	// show the current crop
+	for(var j=0;j<network[targetnode].lo0t.length;++j) {
+		if (j<5) {
+			col1.html(col1.html() + '<img src="images/lo0t/lo0t.'+network[targetnode].lo0t[j]+'.png" class="img-responsive" alt="'+network[targetnode].lo0t[j]+'">');
+		} else {
+			col2.html(col2.html() + '<img src="images/lo0t/lo0t.'+network[targetnode].lo0t[j]+'.png" class="img-responsive" alt="'+network[targetnode].lo0t[j]+'">');
+		}
+	}
+}
+function dropThis(targetnode, lootnum) {
+	// drop this loot card onto the node
+	//var lootnum = $(this).attr('data-index');
+	// TODO figure out why the lootnum is always set to 1 more than the amount of loot the player has in their hand !?!
+	// also, why $this doesn't seem to have a data-index attribute !?!
+	var loot = players[currentplayer].lo0t[lootnum];
+	console.log('loot being dropped: '+loot);
+	network[targetnode].lo0t.push(loot);
+	// remove loot from player object
+	players[currentplayer].lo0t.splice(lootnum, 1);
+	// show it on the node
+	showLootOnNode(targetnode);
+	$('#lootimg'+lootnum).unbind('click');
+	// remove the image
+	$('.p_loot'+j).html('');
+	$('#lo0t').modal('hide');	
+	incrementMove();
+}
+function dropLoot(nodenum) {
+	// show the dialog box so player can drop some loot on this node
+	showPlayerLoot(nodenum);
+	$('#newLoot').hide();
+	// TODO show some instructions and add code to trap keyclicks on the player's loot cards
+	$('#lootPrefix').text('Drop');
+	$('#lootInstructions').html('<div class="text-center">Click on a loot card to drop it here, or <button class="btn btn-xs btn-primary" data-dismiss="modal" onclick="decrementMove()">Cancel</button></div>').show();
+	$('#lo0t').modal('show');
+}
 function activateTile(id) {
 	// enable the slide up menu for a tile
 	$('#'+id).parent().hover(
@@ -495,7 +538,7 @@ function resizeTiles() {
     });
     // reposition the dropped loot divs    
     $( '.tilecards1, .tilecards2' ).each(function( ) {
-    	console.log('setting tilecards top to '+(15-tileheight));
+    	//console.log('setting tilecards top to '+(15-tileheight));
         $( this ).css('top',(15-tileheight)+"px");
     });
 }
