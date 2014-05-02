@@ -505,11 +505,11 @@ $( document ).ready(function() {
     // display the tiles
     for(var i=0;i<network.length;++i) {
         if (network[i].compromised === true) {
-            $('#tile'+network[i].y+network[i].x).find('img').attr('src','images/tiles/'+network[i].image+'_compromised.png');
+            $('#tile'+network[i].y+network[i].x).find('.nodeimg').attr('src','images/tiles/'+network[i].image+'_compromised.png');
         } else {
-            $('#tile'+network[i].y+network[i].x).find('img').attr('src','images/tiles/'+network[i].image+'.png');
+            $('#tile'+network[i].y+network[i].x).find('.nodeimg').attr('src','images/tiles/'+network[i].image+'.png');
         }
-        $('#tile'+network[i].y+network[i].x).find('img').attr('alt',network[i].name);
+        $('#tile'+network[i].y+network[i].x).find('.nodeimg').attr('alt',network[i].name);
     }
     // show the player icons and their lo0t
     for(i=players.length-1;i>=0;--i) { // show the first player last, so that the menus are all set up for them correctly
