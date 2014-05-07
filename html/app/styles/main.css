@@ -220,11 +220,13 @@ overflow: hidden;
 }
 .tilecards1, .tilecards2 {
     position: relative;
-    width: 10%;
+    width: 15%;
 }
 .tilecards1 {
     left: 7%;
+    float: left;
 }
 .tilecards2 {
     right: 7%;
+    float: right;
 }

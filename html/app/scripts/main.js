@@ -141,57 +141,13 @@ players = [player1]; // only one player for now
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-function grabLoot(wherefrom) {
-	// TODO add code to check for sufficient loot cards in teh lo0t array, if not restock from the discard array and shuffle
-	var loot = lo0t.pop();
-	var newlootpos = players[currentplayer].lo0t.length;
-	if(loot.substring(0, 9) !== 'detection') {
-		// got a good card
-	    $(wherefrom).attr('src','images/lo0t/lo0t.'+loot+'.png').fadeOut(1000);
-	    $('.p_loot'+newlootpos).html('<img src="images/lo0t/lo0t.'+loot+'.png" class="img-responsive" alt="'+loot+'">').fadeIn(1000);
-		players[currentplayer].lo0t.push(loot);
-	} else {
-		// intrusion detected!
-		// TODO add code for handling the various detection cards
-	    $(wherefrom).attr('src','images/lo0t/lo0t.'+loot+'.png').fadeOut(1000);
-	}
-	players[currentplayer].movenum += 1;
-	if (players[currentplayer].movenum === 2) {
-		// we've got our 2 loot cards
-		players[currentplayer].movenum = 1;
-		$('#goPatch').show();
-	}
-	// TODO add code for initiating the next phase of play: patch
-}
-function showPlayerLoot(targetnode) {
-	//$('.modal-title').html('New <span class="red">[</span>lo0t!<span class="red">]</span>');
-	players[currentplayer].lo0t.sort();
-	var lo0t = players[currentplayer].lo0t;
-	for(var j=0;j<lo0t.length;++j) {
-		$('.p_loot'+j).html('<img src="images/lo0t/lo0t.'+lo0t[j]+'.png" id="lootimg'+j+'" data-index="'+j+'" class="img-responsive" alt="'+lo0t[j]+'">');
-		if (targetnode > -1) { // showplayer has been called from the droploot activity
-			$('#lootimg'+j).unbind('click');			
-            //console.log('dropThis('+j+', '+targetnode+')');
-			$('#lootimg'+j).click(function() {
-                dropThis(targetnode,j);
-            });
-		}
-	}
-}
-function getLoot() {
-	players[currentplayer].movenum = 0;
-	// hide the loot modal (in case we're being called from a drop loot move)
-	$('#lo0t').modal('hide');
-	// get some new loot
-	showPlayerLoot(-1);
-	// show the new loot cards, but don't allow for any interaction
-	$('#newloot1, #newloot2').attr('src','images/backs/back_lo0t.png').show();
-	$('#newLoot').show();
-	// show the loot modal
-	$('#lootPrefix').text('New');
-	$('#lootInstructions').hide();
-	$('#lo0t').modal('show');
-}
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+// 
+// PLAY Phase I : Action
+//
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 function incrementMove() {
 	// player has clicked on the 'skip' button
 	players[currentplayer].movenum += 1;
@@ -206,48 +162,6 @@ function decrementMove() {
 	players[currentplayer].movenum -= 1;
 	$('.movenum').text(players[currentplayer].movenum);
 }
-function showLootOnNode(targetnode) {
-	// clear current images
-	var col1 = $('#tile'+network[targetnode].y+network[targetnode].x).find('.tilecards1')
-	col1.html('');	
-	var col2 = $('#tile'+network[targetnode].y+network[targetnode].x).find('.tilecards2')
-	col2.html('');
-	// show the current crop
-	for(var j=0;j<network[targetnode].lo0t.length;++j) {
-		if (j<5) {
-			col1.html(col1.html() + '<img src="images/lo0t/lo0t.'+network[targetnode].lo0t[j]+'.png" class="img-responsive" alt="'+network[targetnode].lo0t[j]+'">');
-		} else {
-			col2.html(col2.html() + '<img src="images/lo0t/lo0t.'+network[targetnode].lo0t[j]+'.png" class="img-responsive" alt="'+network[targetnode].lo0t[j]+'">');
-		}
-	}
-}
-function dropThis(targetnode, lootnum) {
-	// drop this loot card onto the node
-	//var lootnum = $(this).attr('data-index');
-	// TODO figure out why the lootnum is always set to 1 more than the amount of loot the player has in their hand !?!
-	// also, why $this doesn't seem to have a data-index attribute !?!
-	var loot = players[currentplayer].lo0t[lootnum];
-	console.log('loot being dropped: '+loot);
-	network[targetnode].lo0t.push(loot);
-	// remove loot from player object
-	players[currentplayer].lo0t.splice(lootnum, 1);
-	// show it on the node
-	showLootOnNode(targetnode);
-	$('#lootimg'+lootnum).unbind('click');
-	// remove the image
-	$('.p_loot'+j).html('');
-	$('#lo0t').modal('hide');	
-	incrementMove();
-}
-function dropLoot(nodenum) {
-	// show the dialog box so player can drop some loot on this node
-	showPlayerLoot(nodenum);
-	$('#newLoot').hide();
-	// TODO show some instructions and add code to trap keyclicks on the player's loot cards
-	$('#lootPrefix').text('Drop');
-	$('#lootInstructions').html('<div class="text-center">Click on a loot card to drop it here, or <button class="btn btn-xs btn-primary" data-dismiss="modal" onclick="decrementMove()">Cancel</button></div>').show();
-	$('#lo0t').modal('show');
-}
 function activateTile(id) {
 	// enable the slide up menu for a tile
 	$('#'+id).parent().hover(
@@ -259,8 +173,6 @@ function activateTile(id) {
 		}
 	);
 }
-
-
 function showTakeOrMove(x,y) {
 	// look for a tile at the x,y grid position
 	// if compromised show the 'move here' button, otherwise show the 'compromise' button
@@ -297,6 +209,69 @@ function showTakeOrMove(x,y) {
 }
 
 
+// 
+// PLAY Phase I (Action) - drop loot on a node
+//
+function showLootOnNode(targetnode) {
+	// clear current images
+	var col1 = $('#tile'+network[targetnode].y+network[targetnode].x).find('.tilecards1');
+	col1.html('');	
+	var col2 = $('#tile'+network[targetnode].y+network[targetnode].x).find('.tilecards2');
+	col2.html('');
+	// show the current crop
+	for(var j=0;j<network[targetnode].loot.length;++j) {
+		console.log('j: '+j+' network[targetnode].loot[j]: '+network[targetnode].loot[j]);
+		if (j<4) {
+			col1.html(col1.html() + '<img src="images/lo0t/lo0t.'+network[targetnode].loot[j]+'.png" class="img-responsive" alt="'+network[targetnode].loot[j]+'">');
+		} else {
+			col2.html(col2.html() + '<img src="images/lo0t/lo0t.'+network[targetnode].loot[j]+'.png" class="img-responsive" alt="'+network[targetnode].loot[j]+'">');
+		}
+	}
+}
+function dropPlayerLoot(targetnode) {
+	//$('.modal-title').html('New <span class="red">[</span>lo0t!<span class="red">]</span>');
+	players[currentplayer].lo0t.sort();
+	var lo0t = players[currentplayer].lo0t;
+	for(var j=0;j<lo0t.length;++j) {
+		$('.p_loot'+j).html('<img src="images/lo0t/lo0t.'+lo0t[j]+'.png" id="lootimg'+j+'" data-index="'+j+'" class="img-responsive" alt="'+lo0t[j]+'" onclick="dropThis('+targetnode+','+j+');">');
+	}
+}
+function dropThis(targetnode, lootnum) {
+	// drop this loot card onto the node
+	var loot = players[currentplayer].lo0t[lootnum];
+	//console.log('loot being dropped: '+loot+' targetnode: '+targetnode);
+	network[targetnode].loot.push(loot);
+	// remove loot from player object
+	players[currentplayer].lo0t.splice(lootnum, 1);
+	if (players[currentplayer].lo0t.length < 1) {
+		// we've got no more loot to drop, so hide the 'drop' menu option
+		$('button.drop').css('display','none');
+
+	}
+	// show it on the node
+	showLootOnNode(targetnode);
+	$('#lootimg'+lootnum).unbind('click');
+	// remove the image
+	console.log('hiding loot image: .p_loot'+lootnum);
+	$('.p_loot'+lootnum).html('');
+	$('.p_loot'+lootnum).hide();
+	$('#lo0t').modal('hide');	
+	incrementMove();
+}
+function dropLoot(nodenum) {
+	// show the dialog box so player can drop some loot on this node
+	dropPlayerLoot(nodenum);
+	$('#newLoot').hide();
+	$('[class^=p_loot]').html('');
+	$('#lootPrefix').text('Drop');
+	$('#lootInstructions').html('<div class="text-center">Click on a loot card to drop it here, or <button class="btn btn-xs btn-primary" data-dismiss="modal" onclick="decrementMove()">Cancel</button></div>').show();
+	$('#lo0t').modal('show');
+}
+
+
+// 
+// PLAY Phase I (Action) - compromise a node
+//
 function compromise(nodeNum,x,y) {
     // compromise this node
     network[nodeNum].compromised = true;
@@ -305,6 +280,18 @@ function compromise(nodeNum,x,y) {
     incrementMove();
     // reset the buttons on this tile
     showTakeOrMove(x,y);
+}
+
+
+// 
+// PLAY Phase I (Action) - move player to a new node
+//
+function movePlayer(x,y) {
+    // move the player to a new tile. 
+	// This function is called during game play for the currently active player but the real action happens in showPlayer (which is also called when the board is first set up for each of the player tokens being used)
+    showPlayer(currentplayer,x,y);
+    players[currentplayer].currentNode = board[y][x];
+    incrementMove();
 }
 function showPlayer(playernum,xpos,ypos) {
 	// show the player at a given position on the board grid and set up the current and surrounding tiles ready for action
@@ -332,15 +319,15 @@ function showPlayer(playernum,xpos,ypos) {
         dropLoot(board[ypos][xpos]);
     }); 
 	}
-	// TODO add code to trap clicks and display the 'drop loot' dialogue
+
 	$('#'+id+' button.skip').css('display','block');
 	// show that this is a possible target
 	$('#'+id).css('background-color',BACKGROUND_COLOUR);
 	// turn on the slide up menu
 	activateTile(id);
-	// if there's another character here show the 'give' and 'swap' buttons
-	// if there's any loot on the tile show the 'pick up' button
-	// if tile has an asset and that asset has not already been retrieved show the 'retrieve' button
+	// TODO if there's another character here (or if the player is the botmaster) show the 'give' and 'swap' buttons
+	// TODO if there's any loot on the tile show the 'pick up' button
+	// TODO if tile has an asset and that asset has not already been retrieved show the 'retrieve' button
 
 	// set up buttons for the tile to the north
 	if(ypos > 0) {
@@ -399,17 +386,96 @@ function showPlayer(playernum,xpos,ypos) {
 	  // as one action, move across two compromised tiles
 	  break;
 	}
-
-
-}
-function movePlayer(x,y) {
-    // move the player to a new tile. 
-	// This function is called during game play for the currently active player but the real action happens in showPlayer (which is also called when the board is first set up for each of the player tokens being used)
-    showPlayer(currentplayer,x,y);    
-    incrementMove();
 }
 
 
+
+// 
+// PLAY Phase I (Action) - pick a loot card up off the current node
+//
+
+
+// 
+// PLAY Phase I (Action) - give a loot card to another player on the current node
+//
+// Note: the botmaster may give two cards as one action.
+// Note: the wardriver may give a card to any other player no matter where they are located.
+
+
+
+// 
+// PLAY Phase I (Action) - exchange a loot card with another player on the current node
+//
+// Note: the botmaster may exchange two cards as one action.
+// Note: the wardriver may exchange a card with any other player no matter where they are located.
+
+
+// 
+// PLAY Phase I (Action) - recover a digital asset from the current node
+//
+
+// TODO write routines for the above actions. Also add the relevant code to the 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+// 
+// PLAY Phase II -  get 2 new lo0t cards
+//
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function grabLoot(wherefrom) {
+	// TODO add code to check for sufficient loot cards in the lo0t array, if not restock from the discard array and shuffle
+	var loot = lo0t.pop();
+	var newlootpos = players[currentplayer].lo0t.length;
+	if(loot.substring(0, 9) !== 'detection') {
+		// got a good card
+	    $(wherefrom).attr('src','images/lo0t/lo0t.'+loot+'.png').fadeOut(1000);
+	    $('.p_loot'+newlootpos).html('<img src="images/lo0t/lo0t.'+loot+'.png" class="img-responsive" alt="'+loot+'">').fadeIn(1000);
+		players[currentplayer].lo0t.push(loot);
+		// turn on the 'drop loot' option (in case it was turned off through the player dropping everything they owned in a previous move)
+		id = players[currentplayer].ypos.toString() + players[currentplayer].xpos.toString();
+		$('#'+id+' button.drop').css('display','block');
+		$('#'+id+' button.drop').unbind('click');
+		$('#'+id+' button.drop').click(function() {
+        dropLoot(board[players[currentplayer].ypos][players[currentplayer].xpos]);
+    }); 
+	} else {
+		// intrusion detected!
+		// TODO add code for handling the various detection cards
+	    $(wherefrom).attr('src','images/lo0t/lo0t.'+loot+'.png').fadeOut(1000);
+	}
+	players[currentplayer].movenum += 1;
+	if (players[currentplayer].movenum === 2) {
+		// we've got our 2 loot cards
+		players[currentplayer].movenum = 1;
+		$('#goPatch').show();
+	}
+	// TODO add code for initiating the next phase of play: patch
+}
+function showPlayerLoot() {
+	//$('.modal-title').html('New <span class="red">[</span>lo0t!<span class="red">]</span>');
+	players[currentplayer].lo0t.sort();
+	var lo0t = players[currentplayer].lo0t;
+	for(var j=0;j<lo0t.length;++j) {
+		$('.p_loot'+j).html('<img src="images/lo0t/lo0t.'+lo0t[j]+'.png" id="lootimg'+j+'" data-index="'+j+'" class="img-responsive" alt="'+lo0t[j]+'">');
+	}
+}
+function getLoot() {
+	players[currentplayer].movenum = 0;
+	// hide the loot modal (in case we're being called from a drop loot move)
+	$('#lo0t').modal('hide');
+	$('#goPatch').hide();
+	// get some new loot
+	showPlayerLoot();
+	// show the new loot cards, but don't allow for any interaction
+	$('#newloot1, #newloot2').attr('src','images/backs/back_lo0t.png').show();
+	$('#newLoot').show();
+	// show the loot modal
+	$('#lootPrefix').text('New');
+	$('#lootInstructions').hide();
+	$('#lo0t').modal('show');
+}
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
