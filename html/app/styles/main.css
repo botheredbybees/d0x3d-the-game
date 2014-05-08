@@ -7,7 +7,7 @@
 
 /* Space out content a bit */
 body {
-    padding-top: 20px;
+    padding-top: 0px;
     padding-bottom: 20px;
 	background-image: url('../images/backdrop.png');
 	background-size: cover;
@@ -81,7 +81,7 @@ body {
 
     /* Space out the masthead */
     .header {
-        margin-bottom: 30px;
+        margin-bottom: 0px;
     }
     
     /* Remove the bottom border on the jumbotron for visual effect */
@@ -236,4 +236,16 @@ overflow: hidden;
 }
 .newLootRow {
     min-height: 240px;
+}
+.playerhand {
+    background-color: rgb(242,142,75);
+    background-color: rgba(242,142,75,0.4);
+    margin: 0px 10px 10px 10px;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+}
+.header {
+    background-color: rgba(255,255,255,0.6);
+    padding: 20px;
 }

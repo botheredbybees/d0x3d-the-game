@@ -236,10 +236,12 @@ function dropPlayerLoot(targetnode) {
 	$('[id^=p_loot]').unbind('click');
 	$('[id^=d_loot]').html('');
 	$('[id^=d_loot]').unbind('click');
+	$('[id^=p'+(currentplayer+1)+'loot]').html('');
 	players[currentplayer].lo0t.sort();
 	var lo0t = players[currentplayer].lo0t;
 	for(var j=0;j<lo0t.length;++j) {
 		$('#d_loot'+j).html('<img src="images/lo0t/lo0t.'+lo0t[j]+'.png" id="lootimg'+j+'" data-index="'+j+'" class="img-responsive" alt="'+lo0t[j]+'" onclick="dropThis('+targetnode+','+j+');">');
+		$('#p'+(currentplayer+1)+'loot'+j).html('<img src="images/lo0t/lo0t.'+lo0t[j]+'.png" class="img-responsive" alt="'+lo0t[j]+'" >');
 	}
 }
 function dropThis(targetnode, lootnum) {
@@ -258,7 +260,7 @@ function dropThis(targetnode, lootnum) {
 	// show the loot we just dropped on the node
 	showLootOnNode(targetnode);
 	$('#lootimg'+lootnum).unbind('click');
-	$('#dropLo0t').modal('hide');	
+	$('#dropLo0t').modal('hide');
 	incrementMove();
 }
 function dropLoot(nodenum) {
@@ -440,7 +442,12 @@ function grabLoot(wherefrom) {
 	if(loot.substring(0, 9) !== 'detection') {
 		// got a good card
 	    $(wherefrom).attr('src','images/lo0t/lo0t.'+loot+'.png').fadeOut(1000);
+	    // show in the modal display of player loot cards
 	    $('#p_loot'+newlootpos).html('<img src="images/lo0t/lo0t.'+loot+'.png" class="img-responsive" alt="'+loot+'">').fadeIn(1000);
+		// show on the main screen player loot cards
+		//console.log('updating #p'+(currentplayer+1)+'loot'+newlootpos);
+	   $('#p'+(currentplayer+1)+'loot'+newlootpos).html('<img src="images/lo0t/lo0t.'+loot+'.png" class="img-responsive" alt="'+loot+'">');
+		
 		players[currentplayer].lo0t.push(loot);
 		// turn on the 'drop loot' option (in case it was turned off through the player dropping everything they owned in a previous move)
 		var id = players[currentplayer].ypos.toString() + players[currentplayer].xpos.toString();
@@ -459,8 +466,8 @@ function grabLoot(wherefrom) {
 		// we've got our 2 loot cards
 		players[currentplayer].movenum = 1;
 		$('#goPatch').show();
+		// TODO add code for initiating the next phase of play: patch
 	}
-	// TODO add code for initiating the next phase of play: patch
 }
 function showPlayerLoot() {
 	//$('.modal-title').html('New <span class="red">[</span>lo0t!<span class="red">]</span>');
@@ -477,7 +484,7 @@ function getLoot() {
 	$('#goPatch').hide();
 	// get some new loot
 	showPlayerLoot();
-	// show the new loot cards, but don't allow for any interaction
+	// show the new loot cards
 	$('#newloot1, #newloot2').attr('src','images/backs/back_lo0t.png').show();
 	$('#newLoot').show();
 	// show the loot modal
