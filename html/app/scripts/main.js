@@ -360,14 +360,15 @@ function showPlayer(playernum,xpos,ypos) {
 	case 'social engineer':
 	  // as one action, move to any compromised tile
 	  for(var i=0; i<network.length;++i) {
-	  	if(network[i].compromised == true) {
-	  		ypos = network[i].y;
-	  		xpos = network[i].x;
-	  		if((players[playernum].xpos != xpos) || (players[playernum].ypos != ypos)) { // only do this for tiles the player is not currently occupying
+  		if(network[i].compromised === true) {
+  			ypos = network[i].y;
+  			xpos = network[i].x;
+  			if((players[playernum].xpos != xpos) || (players[playernum].ypos != ypos)) {
+          // only do this for tiles the player is not currently occupying
 					$('#'+ypos+xpos+' button.skip').css('display','block');
-					showTakeOrMove(xpos,ypos);	  		
+					showTakeOrMove(xpos,ypos);
 				}
-	  	}
+  		}
 	  }
 	  break;
 	case 'war driver':
@@ -434,7 +435,7 @@ function grabLoot(wherefrom) {
 	    $('.p_loot'+newlootpos).html('<img src="images/lo0t/lo0t.'+loot+'.png" class="img-responsive" alt="'+loot+'">').fadeIn(1000);
 		players[currentplayer].lo0t.push(loot);
 		// turn on the 'drop loot' option (in case it was turned off through the player dropping everything they owned in a previous move)
-		id = players[currentplayer].ypos.toString() + players[currentplayer].xpos.toString();
+		var id = players[currentplayer].ypos.toString() + players[currentplayer].xpos.toString();
 		$('#'+id+' button.drop').css('display','block');
 		$('#'+id+' button.drop').unbind('click');
 		$('#'+id+' button.drop').click(function() {
@@ -604,7 +605,7 @@ function resizeTiles() {
     });
     // reposition the dropped loot divs    
     $( '.tilecards1, .tilecards2' ).each(function( ) {
-    	//console.log('setting tilecards top to '+(15-tileheight));
+	//console.log('setting tilecards top to '+(15-tileheight));
         $( this ).css('top',(15-tileheight)+"px");
     });
 }
