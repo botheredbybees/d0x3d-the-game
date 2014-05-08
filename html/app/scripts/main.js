@@ -220,7 +220,7 @@ function showLootOnNode(targetnode) {
 	col2.html('');
 	// show the current crop
 	for(var j=0;j<network[targetnode].loot.length;++j) {
-		console.log('j: '+j+' network[targetnode].loot[j]: '+network[targetnode].loot[j]);
+		//console.log('j: '+j+' network[targetnode].loot[j]: '+network[targetnode].loot[j]);
 		if (j<4) {
 			col1.html(col1.html() + '<img src="images/lo0t/lo0t.'+network[targetnode].loot[j]+'.png" class="img-responsive" alt="'+network[targetnode].loot[j]+'">');
 		} else {
@@ -229,12 +229,17 @@ function showLootOnNode(targetnode) {
 	}
 }
 function dropPlayerLoot(targetnode) {
-  console.log('dropPlayerLoot(targetnode='+targetnode);
+  //console.log('dropPlayerLoot(targetnode='+targetnode+' player currentnode:'+players[currentplayer].currentNode);
 	//$('.modal-title').html('New <span class="red">[</span>lo0t!<span class="red">]</span>');
+	// clear all existing stuff
+	$('[id^=p_loot]').html('');
+	$('[id^=p_loot]').unbind('click');
+	$('[id^=d_loot]').html('');
+	$('[id^=d_loot]').unbind('click');
 	players[currentplayer].lo0t.sort();
 	var lo0t = players[currentplayer].lo0t;
 	for(var j=0;j<lo0t.length;++j) {
-		$('.p_loot'+j).html('<img src="images/lo0t/lo0t.'+lo0t[j]+'.png" id="lootimg'+j+'" data-index="'+j+'" class="img-responsive" alt="'+lo0t[j]+'" onclick="dropThis('+targetnode+','+j+');">');
+		$('#d_loot'+j).html('<img src="images/lo0t/lo0t.'+lo0t[j]+'.png" id="lootimg'+j+'" data-index="'+j+'" class="img-responsive" alt="'+lo0t[j]+'" onclick="dropThis('+targetnode+','+j+');">');
 	}
 }
 function dropThis(targetnode, lootnum) {
@@ -247,26 +252,20 @@ function dropThis(targetnode, lootnum) {
 	if (players[currentplayer].lo0t.length < 1) {
 		// we've got no more loot to drop, so hide the 'drop' menu option
 		$('button.drop').css('display','none');
-
-	}
-	// show it on the node
+	} 
+	// update our display to show any remaining loot
+	dropPlayerLoot(players[currentplayer].currentNode);
+	// show the loot we just dropped on the node
 	showLootOnNode(targetnode);
 	$('#lootimg'+lootnum).unbind('click');
-	// remove the image
-	console.log('hiding loot image: .p_loot'+lootnum);
-	$('.p_loot'+lootnum).html('');
-	$('.p_loot'+lootnum).hide();
-	$('#lo0t').modal('hide');	
+	$('#dropLo0t').modal('hide');	
 	incrementMove();
 }
 function dropLoot(nodenum) {
 	// show the dialog box so player can drop some loot on this node
 	dropPlayerLoot(nodenum);
 	$('#newLoot').hide();
-	$('[class^=p_loot]').html('');
-	$('#lootPrefix').text('Drop');
-	$('#lootInstructions').html('<div class="text-center">Click on a loot card to drop it here, or <button class="btn btn-xs btn-primary" data-dismiss="modal" onclick="decrementMove()">Cancel</button></div>').show();
-	$('#lo0t').modal('show');
+	$('#dropLo0t').modal('show');
 }
 
 
@@ -290,13 +289,15 @@ function compromise(nodeNum,x,y) {
 // PLAY Phase I (Action) - move player to a new node
 //
 function movePlayer(x,y) {
-    // move the player to a new tile. 
+	//console.log(players[currentplayer]);
+  // move the player to a new tile. 
 	// This function is called during game play for the currently active player but the real action happens in showPlayer (which is also called when the board is first set up for each of the player tokens being used)
-    players[currentplayer].currentNode = board[y][x];
-    players[currentplayer].xpos = x;
-    players[currentplayer].ypos = y;
-    showPlayer(currentplayer,x,y);
-    incrementMove();
+  players[currentplayer].currentNode = board[y][x];
+  players[currentplayer].xpos = x;
+  players[currentplayer].ypos = y;
+  //console.log(players[currentplayer]);
+  showPlayer(currentplayer,x,y);
+  incrementMove();
 }
 function showPlayer(playernum,xpos,ypos) {
 	// show the player at a given position on the board grid and set up the current and surrounding tiles ready for action
@@ -305,7 +306,7 @@ function showPlayer(playernum,xpos,ypos) {
 	$('#'+ypos+xpos).append(image);
 	
 	// hide all buttons
-	$('button').css('display','none');
+	$('#tiles button').css('display','none');
 	// turn the move number display button back on
 	$('.btn-info').css('display','block');
 	// turn off any background colours (used to show which tiles are possible targets)
@@ -319,7 +320,7 @@ function showPlayer(playernum,xpos,ypos) {
 		$('#'+id+' button.drop').css('display','block');
 		$('#'+id+' button.drop').unbind('click');
 		$('#'+id+' button.drop').click(function() {
-        dropLoot(board[ypos][xpos]);
+        dropLoot(players[playernum].currentNode);
     }); 
 	}
 
@@ -439,7 +440,7 @@ function grabLoot(wherefrom) {
 	if(loot.substring(0, 9) !== 'detection') {
 		// got a good card
 	    $(wherefrom).attr('src','images/lo0t/lo0t.'+loot+'.png').fadeOut(1000);
-	    $('.p_loot'+newlootpos).html('<img src="images/lo0t/lo0t.'+loot+'.png" class="img-responsive" alt="'+loot+'">').fadeIn(1000);
+	    $('#p_loot'+newlootpos).html('<img src="images/lo0t/lo0t.'+loot+'.png" class="img-responsive" alt="'+loot+'">').fadeIn(1000);
 		players[currentplayer].lo0t.push(loot);
 		// turn on the 'drop loot' option (in case it was turned off through the player dropping everything they owned in a previous move)
 		var id = players[currentplayer].ypos.toString() + players[currentplayer].xpos.toString();
@@ -466,7 +467,7 @@ function showPlayerLoot() {
 	players[currentplayer].lo0t.sort();
 	var lo0t = players[currentplayer].lo0t;
 	for(var j=0;j<lo0t.length;++j) {
-		$('.p_loot'+j).html('<img src="images/lo0t/lo0t.'+lo0t[j]+'.png" id="lootimg'+j+'" data-index="'+j+'" class="img-responsive" alt="'+lo0t[j]+'">');
+		$('#p_loot'+j).html('<img src="images/lo0t/lo0t.'+lo0t[j]+'.png" id="lootimg'+j+'" data-index="'+j+'" class="img-responsive" alt="'+lo0t[j]+'">');
 	}
 }
 function getLoot() {
@@ -480,11 +481,7 @@ function getLoot() {
 	$('#newloot1, #newloot2').attr('src','images/backs/back_lo0t.png').show();
 	$('#newLoot').show();
 	// show the loot modal
-	$('#lootPrefix').text('New');
-	$('#lootInstructions').hide();
-  // pause for a little so player can see the result of the previous move
-  // then show the next phase (pick up loot)
-	$('#lo0t').delay(5000).modal('show');
+	$('#lo0t').modal('show');
 }
 
 
