@@ -208,7 +208,7 @@ function showTakeOrMove(x,y) {
 	}
 }
 
-
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 // 
 // PLAY Phase I (Action) - drop loot on a node
 //
@@ -269,6 +269,7 @@ function dropLoot(nodenum) {
 }
 
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 // 
 // PLAY Phase I (Action) - compromise a node
 //
@@ -283,14 +284,17 @@ function compromise(nodeNum,x,y) {
 }
 
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 // 
 // PLAY Phase I (Action) - move player to a new node
 //
 function movePlayer(x,y) {
     // move the player to a new tile. 
 	// This function is called during game play for the currently active player but the real action happens in showPlayer (which is also called when the board is first set up for each of the player tokens being used)
-    showPlayer(currentplayer,x,y);
     players[currentplayer].currentNode = board[y][x];
+    players[currentplayer].xpos = x;
+    players[currentplayer].ypos = y;
+    showPlayer(currentplayer,x,y);
     incrementMove();
 }
 function showPlayer(playernum,xpos,ypos) {
@@ -298,8 +302,6 @@ function showPlayer(playernum,xpos,ypos) {
 	var image = $('#icon'+playernum);
 	image.remove();
 	$('#'+ypos+xpos).append(image);
-	players[playernum].xpos = xpos;
-	players[playernum].ypos = ypos;
 	
 	// hide all buttons
 	$('button').css('display','none');
@@ -355,8 +357,7 @@ function showPlayer(playernum,xpos,ypos) {
 	}
 
 	// TODO set up any other tiles for the other character types
-	switch(players[playernum].character.name)
-	{
+	switch(players[playernum].character.name) {
 	case 'social engineer':
 	  // as one action, move to any compromised tile
 	  for(var i=0; i<network.length;++i) {
@@ -391,11 +392,13 @@ function showPlayer(playernum,xpos,ypos) {
 
 
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 // 
 // PLAY Phase I (Action) - pick a loot card up off the current node
 //
 
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 // 
 // PLAY Phase I (Action) - give a loot card to another player on the current node
 //
@@ -404,6 +407,7 @@ function showPlayer(playernum,xpos,ypos) {
 
 
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 // 
 // PLAY Phase I (Action) - exchange a loot card with another player on the current node
 //
@@ -411,6 +415,7 @@ function showPlayer(playernum,xpos,ypos) {
 // Note: the wardriver may exchange a card with any other player no matter where they are located.
 
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 // 
 // PLAY Phase I (Action) - recover a digital asset from the current node
 //
