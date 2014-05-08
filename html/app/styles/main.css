@@ -230,3 +230,10 @@ overflow: hidden;
     right: 7%;
     float: right;
 }
+#goPatch {
+    position: absolute;
+    bottom: 5px;
+}
+.newLootRow {
+    min-height: 240px;
+}

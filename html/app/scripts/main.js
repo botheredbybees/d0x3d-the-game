@@ -229,6 +229,7 @@ function showLootOnNode(targetnode) {
 	}
 }
 function dropPlayerLoot(targetnode) {
+  console.log('dropPlayerLoot(targetnode='+targetnode);
 	//$('.modal-title').html('New <span class="red">[</span>lo0t!<span class="red">]</span>');
 	players[currentplayer].lo0t.sort();
 	var lo0t = players[currentplayer].lo0t;
@@ -431,6 +432,7 @@ function showPlayer(playernum,xpos,ypos) {
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function grabLoot(wherefrom) {
+  // called when a loot card back is clicked on in the 'get loot' phase of play
 	// TODO add code to check for sufficient loot cards in the lo0t array, if not restock from the discard array and shuffle
 	var loot = lo0t.pop();
 	var newlootpos = players[currentplayer].lo0t.length;
@@ -480,8 +482,11 @@ function getLoot() {
 	// show the loot modal
 	$('#lootPrefix').text('New');
 	$('#lootInstructions').hide();
-	$('#lo0t').modal('show');
+  // pause for a little so player can see the result of the previous move
+  // then show the next phase (pick up loot)
+	$('#lo0t').delay(5000).modal('show');
 }
+
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
