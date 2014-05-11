@@ -208,6 +208,14 @@ function showTakeOrMove(x,y) {
 	}
 }
 
+function countPlayerAssets(assets,assetType) {
+	var count = 0;
+	for(var i = 0; i < assets.length; ++i){
+	    if(assets[i] == assetType)
+	        count++;
+	}
+	return count;
+}
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 // 
 // PLAY Phase I (Action) - drop loot on a node
@@ -343,13 +351,40 @@ function showPlayer(playernum,xpos,ypos) {
 	    }); 
 	}
 
+	// if the node has an asset and that asset has not already been retrieved show the 'retrieve' button
+	if (network[players[playernum].currentNode].asset != '') { 
+		// this node has an asset, see if the player has enough loot cards to do an asset recovery
+		var lootCount = 0;
+		switch(network[players[playernum].currentNode].asset) {
+		case 'intellectual property':
+			lootCount = countPlayerAssets(players[playernum].lo0t,'shares_ip');
+			break;
+		case 'authentication credentials':
+			lootCount = countPlayerAssets(players[playernum].lo0t,'shares_auth');
+		    break;
+		case 'financial data':
+			lootCount = countPlayerAssets(players[playernum].lo0t,'shares_financial');
+		    break;
+		case 'personally identifiable information':
+			lootCount = countPlayerAssets(players[playernum].lo0t,'shares_pii');
+		    break;
+		}
+		if (lootCount >= 1) {
+			$('#'+id+' button.recover').css('display','block');
+			$('#'+id+' button.recover').unbind('click');
+			$('#'+id+' button.recover').click(function() {
+				console.log('setting up asset recovery for '+network[players[playernum].currentNode].asset);
+		        recoverAsset(network[players[playernum].currentNode].asset);
+		    });
+	    } 
+	}
+
 	$('#'+id+' button.skip').css('display','block');
 	// show that this is a possible target
 	$('#'+id).css('background-color',BACKGROUND_COLOUR);
 	// turn on the slide up menu
 	activateTile(id);
 	// TODO if there's another character here (or if the player is the botmaster) show the 'give' and 'swap' buttons
-	// TODO if tile has an asset and that asset has not already been retrieved show the 'retrieve' button
 
 	// set up buttons for the tile to the north
 	if(ypos > 0) {
@@ -460,7 +495,42 @@ function pickupAsset(targetnode, lootnum) {
 // 
 // PLAY Phase I (Action) - recover a digital asset from the current node
 //
+function recoverAsset(asset) {
+	var newImg = '';
+	var newTitle = '';
+	switch(asset) {
+	case 'shares_ip':
+		lootCount = countPlayerAssets(players[playernum].lo0t,'shares_ip');
+		newImg = 'images/stickers/sticker_ip.png';
+		newTitle="<h2>[intellectual property] Recovered!</h2> <p>Intellectual property is data that came out of your head or your hands, like inventions and creative works: an essay for school, an original photo, a piece of software, a secret recipe, your band’s demo tracks, your YouTube videos, etc.</p>";
+	    break;
+	case 'shares_auth':
+		lootCount = countPlayerAssets(players[playernum].lo0t,'shares_auth');
+		newImg = 'images/stickers/sticker_auth.png';
+		newTitle="<h2>[authentication credentials] Recovered!</h2> <p>Authentication credentials are data you use to prove your identity. They can be something you have (like a driver’s license), something you know (like a password), or something you are (like a fingerprint). When stolen, someone could use these credentials to impersonate you.</p>"
+		break;
+	case 'shares_financial':
+		lootCount = countPlayerAssets(players[playernum].lo0t,'shares_financial');
+		newImg = 'images/stickers/sticker_financial.png';
+		newTitle="<h2>[financial data] Recovered!</h2> <p>If it’s worth money or about money, it's financial data: credit card numbers, bank account numbers, tax data, electronic gift certificates, e-cash, quarterly earnings reports, etc.</p>";
+	    break;
+	case 'shares_pii':
+		lootCount = countPlayerAssets(players[playernum].lo0t,'shares_pii');
+		newImg = 'images/stickers/sticker_pii.png';
+		newTitle="<h2>[personally identifiable information] Recovered!</h2> <p>Personally identifiable information is data, about you or someone else: your home phone number, your address, photos of you and your friends, your grades, your medical records, etc.</p>";
+	    break;
+	}
+	$('#'+asset).attr('src',newImg);
+	$('#'+asset).attr('title',newTitle);
+	var assettype = $('#'+asset).attr('alt');
+	$('#recoveryInfo').text(assettype);
+	$('#assetRecoveredImg').attr('src',newImg);
+	$('#assetRecoveredImg').attr('alt',$('#'+asset).attr('alt'));
+	$('#assetRecovered').modal('show');
+	// TODO remove the 4 loot cards from the player's hand
+	// TODO add some more code to give feedback on the assetRecovered modal about how many more assets need to be recovered (or if all have been recovered, that the player(s) need to go to the internet gateway to win)
 
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 // 
@@ -520,6 +590,7 @@ function grabLoot(wherefrom) {
 		// we've got our 2 loot cards
 		players[currentplayer].movenum = 1;
 		$('#goPatch').show();
+		// TODO check to see if we need to display the 'retrieve' button
 		// TODO add code for initiating the next phase of play: patch
 	}
 }

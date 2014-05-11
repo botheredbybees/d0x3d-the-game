@@ -34,17 +34,17 @@
                     <h1>Don't get <span class="red">[</span>d0x3d!<span class="red">]</span></h1>
                 </div>
                 <div class="col-md-1">
-                    <img src="images/stickers/sticker_auth_unclaimed.png" width="120" height="120" class="asset img-responsive" alt="Authentication Credentials" data-placement="bottom" data-toggle="tooltip" data-container="body" data-html="true" title="<h2>[authentication credentials]</h2> <p>Authentication credentials are data you use to prove your identity. They can be something you have (like a driver’s license), something you know (like a password), or something you are (like a fingerprint). When stolen, someone could use these credentials to impersonate you.</p><p>You can retrieve your authentication credentials by placing 4 matching lo0t cards on the Certificate Services or Single Sign On Service nodes of the network</p>">
+                    <img src="images/stickers/sticker_auth_unclaimed.png" id="shares_auth" width="120" height="120" class="asset img-responsive" alt="Authentication Credentials" data-placement="bottom" data-toggle="tooltip" data-container="body" data-html="true" title="<h2>[authentication credentials]</h2> <p>Authentication credentials are data you use to prove your identity. They can be something you have (like a driver’s license), something you know (like a password), or something you are (like a fingerprint). When stolen, someone could use these credentials to impersonate you.</p><p>You can retrieve your authentication credentials by placing 4 matching lo0t cards on the Certificate Services or Single Sign On Service nodes of the network</p>">
                 </div>
                 <div class="col-md-1">
-                    <img src="images/stickers/sticker_financial_unclaimed.png" width="120" height="120" class="asset img-responsive" alt="Financial Data"  data-placement="bottom" data-toggle="tooltip" data-container="body" data-html="true" title="<h2>[financial data]</h2> <p>If it’s worth money or about money, it's financial data: credit card numbers, bank account numbers, tax data, electronic gift certificates, e-cash, quarterly earnings reports, etc.</p><p>You can retrieve your financial data by placing 4 matching lo0t cards on the Customer Database or Sales Database nodes of the network</p>">
+                    <img src="images/stickers/sticker_financial_unclaimed.png" id="shares_financial" width="120" height="120" class="asset img-responsive" alt="Financial Data"  data-placement="bottom" data-toggle="tooltip" data-container="body" data-html="true" title="<h2>[financial data]</h2> <p>If it’s worth money or about money, it's financial data: credit card numbers, bank account numbers, tax data, electronic gift certificates, e-cash, quarterly earnings reports, etc.</p><p>You can retrieve your financial data by placing 4 matching lo0t cards on the Customer Database or Sales Database nodes of the network</p>">
                 </div>
                 <div class="col-md-1">
-                    <img src="images/stickers/sticker_ip_unclaimed.png" width="120" height="120" class="asset img-responsive" alt="Intellectual Property" data-placement="bottom" data-toggle="tooltip" data-container="body" data-html="true" title="<h2>[intellectual property]</h2> <p>Intellectual property is data that came out of your head or your hands, like inventions and creative works: an essay for school, an original photo, a piece of software, a secret recipe, your band’s demo tracks, your YouTube videos, etc.</p><p>You can retrieve your intellectual property by placing 4 matching lo0t cards on the Network File Server or Backup File Server nodes of the network</p>">
+                    <img src="images/stickers/sticker_ip_unclaimed.png" id="shares_ip" width="120" height="120" class="asset img-responsive" alt="Intellectual Property" data-placement="bottom" data-toggle="tooltip" data-container="body" data-html="true" title="<h2>[intellectual property]</h2> <p>Intellectual property is data that came out of your head or your hands, like inventions and creative works: an essay for school, an original photo, a piece of software, a secret recipe, your band’s demo tracks, your YouTube videos, etc.</p><p>You can retrieve your intellectual property by placing 4 matching lo0t cards on the Network File Server or Backup File Server nodes of the network</p>">
                 </div>
                 <div class="col-md-1">
                                 
-                    <img src="images/stickers/sticker_pii_unclaimed.png" width="120" height="120" class="asset img-responsive" alt="Personally Identifiable Information" data-placement="bottom" data-toggle="tooltip" data-container="body" data-html="true" title="<h2>[personally identifiable information]</h2> <p>Personally identifiable information is data, about you or someone else: your home phone number, your address, photos of you and your friends, your grades, your medical records, etc.</p><p>You can retrieve your personally identifiable information by placing 4 matching lo0t cards on the IMAP Server or SMTP Server nodes of the network</p>">
+                    <img src="images/stickers/sticker_pii_unclaimed.png" id="shares_pii" width="120" height="120" class="asset img-responsive" alt="Personally Identifiable Information" data-placement="bottom" data-toggle="tooltip" data-container="body" data-html="true" title="<h2>[personally identifiable information]</h2> <p>Personally identifiable information is data, about you or someone else: your home phone number, your address, photos of you and your friends, your grades, your medical records, etc.</p><p>You can retrieve your personally identifiable information by placing 4 matching lo0t cards on the IMAP Server or SMTP Server nodes of the network</p>">
                 </div>
             </div>
 
@@ -1238,7 +1238,30 @@
               </div>
             </div><!-- /.modal-content -->
           </div><!-- /.modal-dialog -->
-        </div><!-- / pickupLo0t.modal -->             
+        </div><!-- / pickupLo0t.modal --> 
+
+        <div class="modal fade" id="assetRecovered" data-backdrop="static" data-keyboard="false" data-show="false">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title">Asset Recovered!</h1>
+              </div>
+              <div class="modal-body">
+                <div id="recoveryInfo" class="text-center">
+                    <p>
+                    <img src="" id="assetRecoveredImg" width="120" height="120" class="asset img-responsive" alt="">
+                    <br><br>Congratulations, you've recovered your <span id="recoveredAsset"></span>.
+                    </p>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <p class="text-center">                 
+                    <button class="btn btn-xl btn-success" data-dismiss="modal"  data-target="#assetRecovered">OK</button>
+                </p>
+              </div>
+            </div><!-- /.modal-content -->
+          </div><!-- /.modal-dialog -->
+        </div><!-- / assetRecovered.modal -->             
 
 
         <!-- build:js scripts/vendor.js -->
