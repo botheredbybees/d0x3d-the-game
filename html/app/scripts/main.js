@@ -236,21 +236,7 @@ function showLootOnNode(targetnode) {
 		$('#p'+(currentplayer+1)+'loot'+j).html('<img src="images/lo0t/lo0t.'+lo0t[j]+'.png" class="img-responsive" alt="'+lo0t[j]+'" >');
 	}
 }
-function dropPlayerLoot(targetnode) {
-  //console.log('dropPlayerLoot(targetnode='+targetnode+' player currentnode:'+players[currentplayer].currentNode);
-	//$('.modal-title').html('New <span class="red">[</span>lo0t!<span class="red">]</span>');
-	// clear all existing stuff
-	$('[id^=p_loot]').html('');
-	$('[id^=p_loot]').unbind('click');
-	$('[id^=d_loot]').html('');
-	$('[id^=d_loot]').unbind('click');	
-	players[currentplayer].lo0t.sort();
-	var lo0t = players[currentplayer].lo0t;
-	for(var j=0;j<lo0t.length;++j) {
-		$('#d_loot'+j).html('<img src="images/lo0t/lo0t.'+lo0t[j]+'.png" id="lootimg'+j+'" data-index="'+j+'" class="img-responsive" alt="'+lo0t[j]+'" onclick="dropThis('+targetnode+','+j+');">');
-	}
-}
-function dropThis(targetnode, lootnum) {
+function dropAsset(targetnode, lootnum) {
 	// drop this loot card onto the node
 	var loot = players[currentplayer].lo0t[lootnum];
 	//console.log('loot being dropped: '+loot+' targetnode: '+targetnode);
@@ -268,9 +254,6 @@ function dropThis(targetnode, lootnum) {
 	$('#'+id+' button.pickup').click(function() {
         pickupLoot(players[currentplayer].currentNode);
     });
-
-	// update our display to show any remaining loot
-	dropPlayerLoot(players[currentplayer].currentNode);
 	// show the loot we just dropped on the node
 	showLootOnNode(targetnode);
 	$('#lootimg'+lootnum).unbind('click');
@@ -279,7 +262,16 @@ function dropThis(targetnode, lootnum) {
 }
 function dropLoot(nodenum) {
 	// show the dialog box so player can drop some loot on this node
-	dropPlayerLoot(nodenum);
+	// clear all existing stuff
+	$('[id^=p_loot]').html('');
+	$('[id^=p_loot]').unbind('click');
+	$('[id^=d_loot]').html('');
+	$('[id^=d_loot]').unbind('click');	
+	players[currentplayer].lo0t.sort();
+	var lo0t = players[currentplayer].lo0t;
+	for(var j=0;j<lo0t.length;++j) {
+		$('#d_loot'+j).html('<img src="images/lo0t/lo0t.'+lo0t[j]+'.png" id="lootimg'+j+'" data-index="'+j+'" class="img-responsive" alt="'+lo0t[j]+'" onclick="dropAsset('+nodenum+','+j+');">');
+	}
 	$('#newLoot').modal('hide');
 	$('#pickupLoot').modal('hide');
 	$('#dropLo0t').modal('show');
@@ -357,7 +349,6 @@ function showPlayer(playernum,xpos,ypos) {
 	// turn on the slide up menu
 	activateTile(id);
 	// TODO if there's another character here (or if the player is the botmaster) show the 'give' and 'swap' buttons
-	// TODO if there's any loot on the tile show the 'pick up' button
 	// TODO if tile has an asset and that asset has not already been retrieved show the 'retrieve' button
 
 	// set up buttons for the tile to the north
@@ -426,31 +417,29 @@ function showPlayer(playernum,xpos,ypos) {
 // PLAY Phase I (Action) - pick a loot card up off the current node
 //
 function pickupLoot(nodenum) {
-	// show the dialog box so player can drop some loot on this node
-	pickupNodeLoot(nodenum);
-	$('#newLoot').modal('hide');
-	$('#dropLoot').modal('hide');
-	$('#pickupLo0t').modal('show');
-}
-function pickupNodeLoot(targetnode) {
-	// clear all existing stuff
+	// show the dialog box so player can drop some loot on this node		
+	// first clear all existing stuff
 	$('[id^=pickupP_loot]').html('');
 	$('[id^=node_loot]').html('');
 	$('[id^=node_loot]').unbind('click');
-	network[targetnode].lo0t.sort();
-	var lo0t = network[targetnode].lo0t;
+	network[nodenum].lo0t.sort();
+	var lo0t = network[nodenum].lo0t;
 	players[currentplayer].lo0t.sort();
 	var playerlo0t = players[currentplayer].lo0t;
 	// show this node's loot
 	for(var j=0;j<lo0t.length;++j) {
-		$('#node_loot'+j).html('<img src="images/lo0t/lo0t.'+lo0t[j]+'.png" id="lootimg'+j+'" data-index="'+j+'" class="img-responsive" alt="'+lo0t[j]+'" onclick="pickupThis('+targetnode+','+j+');">');
+		$('#node_loot'+j).html('<img src="images/lo0t/lo0t.'+lo0t[j]+'.png" id="lootimg'+j+'" data-index="'+j+'" class="img-responsive" alt="'+lo0t[j]+'" onclick="pickupAsset('+nodenum+','+j+');">');
 	}
 	// and the loot held by the current player
 	for(var j=0;j<playerlo0t.length;++j) {
 		$('#pickupP_loot'+j).html('<img src="images/lo0t/lo0t.'+playerlo0t[j]+'.png" class="img-responsive" alt="'+playerlo0t[j]+'" >');
-	}	
+	}
+	$('#newLoot').modal('hide');
+	$('#dropLoot').modal('hide');
+	$('#pickupLo0t').modal('show');
 }
-function pickupThis(targetnode, lootnum) {
+
+function pickupAsset(targetnode, lootnum) {
 	// grab this loot card from the node
 	var loot = network[targetnode].lo0t[lootnum];
 	players[currentplayer].lo0t.push(loot);
@@ -460,13 +449,17 @@ function pickupThis(targetnode, lootnum) {
 		// we've got no more loot to grab, so hide the 'pick up loot' menu option
 		$('button.pickup').css('display','none');
 	} 
-	// update our display to show any remaining loot
-	pickupNodeLoot(targetnode);
 	// show the node with the loot removed
 	showLootOnNode(targetnode);
 	$('#pickupLo0t').modal('hide');
 	incrementMove();
 }
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+// 
+// PLAY Phase I (Action) - recover a digital asset from the current node
+//
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -485,13 +478,7 @@ function pickupThis(targetnode, lootnum) {
 // Note: the botmaster may exchange two cards as one action.
 // Note: the wardriver may exchange a card with any other player no matter where they are located.
 
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////
-// 
-// PLAY Phase I (Action) - recover a digital asset from the current node
-//
-
-// TODO write routines for the above actions. Also add the relevant code to the 
+// TODO write routines for the above actions.  
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////
