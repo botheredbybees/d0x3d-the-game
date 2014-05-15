@@ -97,6 +97,8 @@ var lo0t = new Array('detection_honeypot_audit',
 'shares_pii',
 'shares_pii');
 
+var lo0tDiscards = new Array();
+
 function character(name,description,start,filestem) {
     this.name = name;
     this.description = description;
@@ -504,37 +506,46 @@ function recoverAsset(asset) {
   switch(asset) {
   case 'intellectual property':
     assetID = 'shares_ip';
-    lootCount = countPlayerAssets(players[currentplayer].lo0t,'shares_ip');
     newImg = 'images/stickers/sticker_ip.png';
     newTitle="<h2>[intellectual property] Recovered!</h2> <p>Intellectual property is data that came out of your head or your hands, like inventions and creative works: an essay for school, an original photo, a piece of software, a secret recipe, your band’s demo tracks, your YouTube videos, etc.</p>";
     break;
   case  'authentication credentials':
     assetID = 'shares_auth';
-    lootCount = countPlayerAssets(players[currentplayer].lo0t,'shares_auth');
     newImg = 'images/stickers/sticker_auth.png';
     newTitle="<h2>[authentication credentials] Recovered!</h2> <p>Authentication credentials are data you use to prove your identity. They can be something you have (like a driver’s license), something you know (like a password), or something you are (like a fingerprint). When stolen, someone could use these credentials to impersonate you.</p>";
     break;
   case  'financial data':
     assetID = 'shares_financial';
-    lootCount = countPlayerAssets(players[currentplayer].lo0t,'shares_financial');
     newImg = 'images/stickers/sticker_financial.png';
     newTitle="<h2>[financial data] Recovered!</h2> <p>If it’s worth money or about money, it's financial data: credit card numbers, bank account numbers, tax data, electronic gift certificates, e-cash, quarterly earnings reports, etc.</p>";
     break;
   case  'personally identifiable information':
     assetID = 'shares_pii';
-    lootCount = countPlayerAssets(players[currentplayer].lo0t,'shares_pii');
     newImg = 'images/stickers/sticker_pii.png';
     newTitle="<h2>[personally identifiable information] Recovered!</h2> <p>Personally identifiable information is data, about you or someone else: your home phone number, your address, photos of you and your friends, your grades, your medical records, etc.</p>";
     break;
   }
   //console.log('getting asset: '+asset+" assetID: "+assetID);
   $('#'+assetID).attr('src',newImg);
-  $('#'+assetID).attr('title',newTitle);
+  $('#'+assetID).attr('data-original-title', newTitle).tooltip('fixTitle');
   $('#recoveredAsset').text(asset);
   $('#assetRecoveredImg').attr('src',newImg);
   $('#assetRecoveredImg').attr('alt',asset);
   $('#assetRecovered').modal('show');
-  // TODO remove the 4 loot cards from the player's hand
+  // remove the 4 loot cards from the player's hand
+  var removed = 0;
+  for (var j=0; j<players[currentplayer].lo0t.length;++j) {
+    if (players[currentplayer].lo0t[j] == assetID && removed < 1) {
+      players[currentplayer].lo0t.splice(j, 1);
+      ++removed;
+      --j; // since we removed one element of the array we need to start from one element back
+    }
+  }
+  // update the screen lo0t display
+  showPlayerLoot();
+
+  // TODO add code to show the 'retrieve loot' option after picking up a loot card
+
   // TODO add some more code to give feedback on the assetRecovered modal about how many more assets need to be recovered (or if all have been recovered, that the player(s) need to go to the internet gateway to win)
 
 }
@@ -572,20 +583,17 @@ function grabLoot(wherefrom) {
   var newlootpos = players[currentplayer].lo0t.length;
   if(loot.substring(0, 9) !== 'detection') {
     // got a good card
-      $(wherefrom).attr('src','images/lo0t/lo0t.'+loot+'.png').fadeOut(1000);
-      // show in the modal display of player loot cards
-      $('#p_loot'+newlootpos).html('<img src="images/lo0t/lo0t.'+loot+'.png" class="img-responsive" alt="'+loot+'">').fadeIn(1000);
-    // show on the main screen player loot cards
-    //console.log('updating #p'+(currentplayer+1)+'loot'+newlootpos);
-     $('#p'+(currentplayer+1)+'loot'+newlootpos).html('<img src="images/lo0t/lo0t.'+loot+'.png" class="img-responsive" alt="'+loot+'">');
-    
+    $(wherefrom).attr('src','images/lo0t/lo0t.'+loot+'.png').fadeOut(1000);
+    // show in the modal display of player loot cards
+    $('#p_loot'+newlootpos).html('<img src="images/lo0t/lo0t.'+loot+'.png" class="img-responsive" alt="'+loot+'">').fadeIn(1000);
     players[currentplayer].lo0t.push(loot);
+    showPlayerLoot();
     // turn on the 'drop loot' option (in case it was turned off through the player dropping everything they owned in a previous move)
     var id = players[currentplayer].ypos.toString() + players[currentplayer].xpos.toString();
     $('#'+id+' button.drop').css('display','block');
     $('#'+id+' button.drop').unbind('click');
     $('#'+id+' button.drop').click(function() {
-        dropLoot(board[players[currentplayer].ypos][players[currentplayer].xpos]);
+      dropLoot(board[players[currentplayer].ypos][players[currentplayer].xpos]);
     }); 
   } else {
     // intrusion detected!
@@ -602,11 +610,14 @@ function grabLoot(wherefrom) {
   }
 }
 function showPlayerLoot() {
-  //$('.modal-title').html('New <span class="red">[</span>lo0t!<span class="red">]</span>');
   players[currentplayer].lo0t.sort();
   var lo0t = players[currentplayer].lo0t;
+  $('[id^=p'+(currentplayer+1)+'loot]').html('');  
   for(var j=0;j<lo0t.length;++j) {
+    // on the modal
     $('#p_loot'+j).html('<img src="images/lo0t/lo0t.'+lo0t[j]+'.png" id="lootimg'+j+'" data-index="'+j+'" class="img-responsive" alt="'+lo0t[j]+'">');
+    // on the main screen
+    $('#p'+(currentplayer+1)+'loot'+(j)).html('<img src="images/lo0t/lo0t.'+lo0t[j]+'.png" id="lootimg'+j+'" class="img-responsive" alt="'+lo0t[j]+'">');
   }
 }
 function getLoot() {
