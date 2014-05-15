@@ -23,7 +23,7 @@
 var BACKGROUND_COLOUR = '#FFA500';
 var currentplayer = 0; // currently active player
 var players = [];
-
+var infoconLevel = 2;
 // set up the default board: a 6x6 array of 2, 4, 6, 6, 4, 2 cards
 // each element of the array has either a -1 (no tile) or a non-negative integer corresponding to the network array index corresponding to that node
 // TODO for future versions there create other layouts, assign these for different difficulty levels, or as a progression when more than one game is played
@@ -67,6 +67,9 @@ new node('VPN Gateway', 'node_vpn_gateway'),
 new node('Web Server', 'node_web_server'),
 new node('Wireless Router', 'node_wireless_router'),
 new node('Internet Gateway', 'node_internet_gateway'));
+
+var patchCards = network.slice(0); // get a copy of the nework array for patching
+var patchDiscards = new Array();
 
 var lo0t = new Array('detection_honeypot_audit',
 'detection_net_anomaly',
@@ -354,7 +357,7 @@ function showPlayer(playernum,xpos,ypos) {
     }); 
   }
 
-  // if the node has an asset and that asset has not already been retrieved show the 'retrieve' button
+  // if the node has enough asset tokens and that asset has not already been retrieved show the 'retrieve' button
   if (network[players[playernum].currentNode].asset !== '') { 
     // this node has an asset, see if the player has enough loot cards to do an asset recovery
     var lootCount = 0;
@@ -372,7 +375,7 @@ function showPlayer(playernum,xpos,ypos) {
       lootCount = countPlayerAssets(players[playernum].lo0t,'shares_pii');
       break;
     }
-    if (lootCount >= 1) {
+    if (lootCount >= 4) {
       $('#'+id+' button.recover').css('display','block');
       $('#'+id+' button.recover').unbind('click');
       $('#'+id+' button.recover').click(function() {
@@ -535,7 +538,8 @@ function recoverAsset(asset) {
   // remove the 4 loot cards from the player's hand
   var removed = 0;
   for (var j=0; j<players[currentplayer].lo0t.length;++j) {
-    if (players[currentplayer].lo0t[j] == assetID && removed < 1) {
+    if (players[currentplayer].lo0t[j] == assetID && removed < 4) {
+      lo0tDiscards.push(assetID);
       players[currentplayer].lo0t.splice(j, 1);
       ++removed;
       --j; // since we removed one element of the array we need to start from one element back
@@ -543,8 +547,9 @@ function recoverAsset(asset) {
   }
   // update the screen lo0t display
   showPlayerLoot();
+  incrementMove();
 
-  // TODO add code to show the 'retrieve loot' option after picking up a loot card
+  // TODO add code to show the 'retrieve loot' option after picking up a loot card (i.e. if the play hasn't moved, but has picked up a card)
 
   // TODO add some more code to give feedback on the assetRecovered modal about how many more assets need to be recovered (or if all have been recovered, that the player(s) need to go to the internet gateway to win)
 
@@ -604,6 +609,11 @@ function grabLoot(wherefrom) {
   if (players[currentplayer].movenum === 2) {
     // we've got our 2 loot cards
     players[currentplayer].movenum = 1;
+    $('#infoconlevel').text(infoconLevel);
+    for (var i=0; i<infoconLevel; ++i) {
+      $('#networkNode'+i).html('<img src="images/backs/back_patch.png" id="patch'+i+'" data-index="'+i+'" class="img-responsive" alt="patch '+i+'">'); 
+    }
+    console.log("patching");
     $('#goPatch').show();
     // TODO check to see if we need to display the 'retrieve' button
     // TODO add code for initiating the next phase of play: patch
@@ -624,7 +634,7 @@ function getLoot() {
   players[currentplayer].movenum = 0;
   // hide the loot modal (in case we're being called from a drop loot move)
   $('#lo0t').modal('hide');
-  $('#goPatch').hide();
+  $('#goPatch').modal('hide');
   // get some new loot
   showPlayerLoot();
   // show the new loot cards
@@ -634,6 +644,28 @@ function getLoot() {
   $('#dropLoot').modal('hide');
   $('#pickupLoot').modal('hide');
   $('#lo0t').modal('show');
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+// 
+// PLAY Phase III -  patch
+//
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+function patch(wherefrom) {
+  // called when a patch card back is clicked on in the 'patch' phase of play
+  // TODO add code to check for sufficient node cards in the patch array, if not restock from the patchDiscards array and shuffle
+  // TODO remove lo0t cards from the target node
+  // TODO get any players on the node to move - if they cannot the game has been lost (show loosing modal with a 'replay' option).
+  // TODO decommission node if there are any players on it
+  // TODO if not decommissioned set node to uncompromised state
+  var patchnode = patchCards.pop();
+  $(wherefrom).attr('src','images/tiles/'+patchnode.image+'.png').fadeIn(1000);
+  if(players[currentplayer].lo0t.length > 5) {
+    $('#discard').show();
+    // TODO create routines for discarding extra lo0t
+  }
 }
 
 
@@ -667,6 +699,9 @@ function shuffle(cards) {
 function setup() {
   // shuffle the loot
   shuffle(lo0t);
+
+  // shuffle the patch cards
+  shuffle(patchCards);
     
   // shuffle the nodes on the network
   shuffle(network);
@@ -812,6 +847,13 @@ $( document ).ready(function() {
   $('#newloot2').click(function() {
     grabLoot('#newloot2');
   });
+
+  // set up the patch cards for clicking
+  for (i=0;i<5;++i) {
+    $('#patch'+i).click(function() {
+      patch('#patch'+i);
+    });
+  }
   
   // start the player off on the first move
   incrementMove();

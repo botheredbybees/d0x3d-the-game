@@ -1261,7 +1261,39 @@
               </div>
             </div><!-- /.modal-content -->
           </div><!-- /.modal-dialog -->
-        </div><!-- / assetRecovered.modal -->             
+        </div><!-- / assetRecovered.modal -->
+
+        <div class="modal fade" id="goPatch" data-backdrop="static" data-keyboard="false" data-show="false">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title"><span class="red">[</span>patch!<span class="red">]</span> Infocon level <span id="infoconlevel"></span></h1>
+              </div>
+              <div class="modal-body">
+                <div id="patchInstructions" class="text-center">
+                <p>Click on each patch card to see which nodes the sys admin will be working on</p>
+                </div>
+                <div id="networkNode">
+                    <div class="row">
+                        <div class="col-md-2 col-md-offset-2" id="networkNode3">
+                        </div>
+                        <div class="col-md-2" id="networkNode1">
+                        </div>
+                        <div class="col-md-2" id="networkNode0">
+                        </div>
+                        <div class="col-md-2" id="networkNode2">
+                        </div>
+                        <div class="col-md-2" id="networkNode4">
+                        </div>
+                    </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <div id="patchComments"></div>
+              </div>
+            </div><!-- /.modal-content -->
+          </div><!-- /.modal-dialog -->
+        </div><!-- / goPatch.modal --> 
 
 
         <!-- build:js scripts/vendor.js -->
