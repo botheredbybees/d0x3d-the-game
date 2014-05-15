@@ -24,6 +24,7 @@ var BACKGROUND_COLOUR = '#FFA500';
 var currentplayer = 0; // currently active player
 var players = [];
 var infoconLevel = 2;
+var patchcount = 0;
 // set up the default board: a 6x6 array of 2, 4, 6, 6, 4, 2 cards
 // each element of the array has either a -1 (no tile) or a non-negative integer corresponding to the network array index corresponding to that node
 // TODO for future versions there create other layouts, assign these for different difficulty levels, or as a progression when more than one game is played
@@ -69,7 +70,7 @@ new node('Wireless Router', 'node_wireless_router'),
 new node('Internet Gateway', 'node_internet_gateway'));
 
 var patchCards = network.slice(0); // get a copy of the nework array for patching
-var patchDiscards = new Array();
+var patchDiscards = [];
 
 var lo0t = new Array('detection_honeypot_audit',
 'detection_net_anomaly',
@@ -100,7 +101,7 @@ var lo0t = new Array('detection_honeypot_audit',
 'shares_pii',
 'shares_pii');
 
-var lo0tDiscards = new Array();
+var lo0tDiscards = [];
 
 function character(name,description,start,filestem) {
     this.name = name;
@@ -144,7 +145,22 @@ players = [player1]; // only one player for now
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////
-
+function hidemodals() {
+	// hide all the modals
+	$('#dropLo0t').modal('hide');
+	$('#lo0t').modal('hide');
+	$('#pickupLo0t').modal('hide');
+	$('#assetRecovered').modal('hide');
+	$('#patchPhase').modal('hide');
+	$('#discardLo0t').modal('hide');
+	//$('#').modal('hide');
+}
+function showpatch() {
+	$('#goPatch').hide();
+	$('#patchComments').html('');
+	hidemodals();
+	$('#patchPhase').modal('show');
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -271,7 +287,7 @@ function dropAsset(targetnode, lootnum) {
   // show the loot we just dropped on the node
   showLootOnNode(targetnode);
   $('#lootimg'+lootnum).unbind('click');
-  $('#dropLo0t').modal('hide');
+  hidemodals();
   incrementMove();
 }
 function dropLoot(nodenum) {
@@ -286,8 +302,7 @@ function dropLoot(nodenum) {
   for(var j=0;j<lo0t.length;++j) {
     $('#d_loot'+j).html('<img src="images/lo0t/lo0t.'+lo0t[j]+'.png" id="lootimg'+j+'" data-index="'+j+'" class="img-responsive" alt="'+lo0t[j]+'" onclick="dropAsset('+nodenum+','+j+');">');
   }
-  $('#newLoot').modal('hide');
-  $('#pickupLoot').modal('hide');
+  hidemodals();
   $('#dropLo0t').modal('show');
 }
 
@@ -316,7 +331,18 @@ function movePlayer(x,y) {
   //console.log(players[currentplayer]);
   // move the player to a new tile. 
   // This function is called during game play for the currently active player but the real action happens in showPlayer (which is also called when the board is first set up for each of the player tokens being used)
+  // remove the player from the current node
+  var tileplayers = network[players[currentplayer].currentNode].players;
+  var newlist = [];
+  for (var i=0; i< tileplayers.length; ++i) {
+  	if (tileplayers[i].name != players[currentplayer].name) {
+  		newlist.push(tileplayers[i]);
+  	}
+  	network[players[currentplayer].currentNode].players = newlist.slice(0);
+  }
   players[currentplayer].currentNode = board[y][x];
+  // add this player to the node for tracking
+  network[players[currentplayer].currentNode].players.push(players[currentplayer]);
   players[currentplayer].xpos = x;
   players[currentplayer].ypos = y;
   //console.log(players[currentplayer]);
@@ -475,8 +501,7 @@ function pickupLoot(nodenum) {
   for(j=0;j<playerlo0t.length;++j) {
     $('#pickupP_loot'+j).html('<img src="images/lo0t/lo0t.'+playerlo0t[j]+'.png" class="img-responsive" alt="'+playerlo0t[j]+'" >');
   }
-  $('#newLoot').modal('hide');
-  $('#dropLoot').modal('hide');
+  hidemodals();
   $('#pickupLo0t').modal('show');
 }
 
@@ -492,7 +517,7 @@ function pickupAsset(targetnode, lootnum) {
   } 
   // show the node with the loot removed
   showLootOnNode(targetnode);
-  $('#pickupLo0t').modal('hide');
+  hidemodals();
   incrementMove();
 }
 
@@ -611,9 +636,9 @@ function grabLoot(wherefrom) {
     players[currentplayer].movenum = 1;
     $('#infoconlevel').text(infoconLevel);
     for (var i=0; i<infoconLevel; ++i) {
-      $('#networkNode'+i).html('<img src="images/backs/back_patch.png" id="patch'+i+'" data-index="'+i+'" class="img-responsive" alt="patch '+i+'">'); 
+      $('#networkNode'+i).html('<img src="images/backs/back_patch.png" id="nodeToPatch'+i+'" data-index="'+i+'" class="img-responsive" alt="patch '+i+'">'); 
     }
-    console.log("patching");
+    patchcount = 0;
     $('#goPatch').show();
     // TODO check to see if we need to display the 'retrieve' button
     // TODO add code for initiating the next phase of play: patch
@@ -633,16 +658,14 @@ function showPlayerLoot() {
 function getLoot() {
   players[currentplayer].movenum = 0;
   // hide the loot modal (in case we're being called from a drop loot move)
-  $('#lo0t').modal('hide');
-  $('#goPatch').modal('hide');
+  hidemodals();
   // get some new loot
   showPlayerLoot();
   // show the new loot cards
   $('#newloot1, #newloot2').attr('src','images/backs/back_lo0t.png').show();
   $('#newLoot').show();
+  $('#goPatch').hide();
   // show the loot modal
-  $('#dropLoot').modal('hide');
-  $('#pickupLoot').modal('hide');
   $('#lo0t').modal('show');
 }
 
@@ -656,19 +679,69 @@ function getLoot() {
 function patch(wherefrom) {
   // called when a patch card back is clicked on in the 'patch' phase of play
   // TODO add code to check for sufficient node cards in the patch array, if not restock from the patchDiscards array and shuffle
-  // TODO remove lo0t cards from the target node
-  // TODO get any players on the node to move - if they cannot the game has been lost (show loosing modal with a 'replay' option).
-  // TODO decommission node if there are any players on it
-  // TODO if not decommissioned set node to uncompromised state
+  
   var patchnode = patchCards.pop();
+  var patchcomment = '';
   $(wherefrom).attr('src','images/tiles/'+patchnode.image+'.png').fadeIn(1000);
-  if(players[currentplayer].lo0t.length > 5) {
-    $('#discard').show();
-    // TODO create routines for discarding extra lo0t
+  // find the matching network node
+  for (var i =0; i<network.length;++i) {
+  	if(network[i].name == patchnode.name) {
+  		// we have a match
+  		patchcount += 1;
+  		if (network[i].lo0t.length>0){
+  			// remove lo0t cards from the target node
+  			patchcomment += '<br>Removed '+network[i].lo0t.length+' digital asset tokens';
+				for(var j=0; j<network[i].lo0t.length; ++j) {
+					lo0tDiscards.push(network[i].lo0t[j]);
+				}
+				network[i].lo0t = [];
+  		}
+  		if (network[i].compromised) {
+  			if (network[i].players.length>0) {
+  			  // TODO get any players on the node to move - if they cannot the game has been lost (show loosing modal with a 'replay' option).
+  				// decommission the node
+  				patchcomment += '<br><span class="red">Intrusion detected!</span> Taking '+patchnode.name+' offline';
+  				network.splice(i, 1);
+  			} else {
+  				// no players on the node, reset to uncompromised
+	  			patchcomment += '<br>Restoring node to an uncompromised state';
+	  			$('#tile'+network[i].y+network[i].x).find('.nodeimg').attr('src','images/tiles/'+network[i].image+'.png');
+	  			network[i].compromised = false;
+	  		}
+  		}
+  		if (patchcomment == '') {
+  			patchcomment = '<br>Nothing found';
+  		}
+  		$('#patchComments').html($('#patchComments').html()+'<br><strong>Patching '+patchnode.name+'</strong>'+patchcomment);
+  		// TODO add patchcard to discard pile if the node was not removed
+  	}
   }
+  if(infoconLevel == patchcount) {
+  	// we've finished patching
+  	$('#goCheck').show();
+  }
+ 
 }
 
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+// 
+// PLAY Phase IV -  check
+//
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+function check() {
+	$('#goCheck').hide();
+	if(players[currentplayer].lo0t.length > 5) {
+  	hidemodals();
+    $('#discardLo0t').modal('show');
+    // TODO create routines for discarding extra lo0t
+  } else {
+  	// move on to the next round. Get the player's next move
+  	hidemodals();
+  }
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -848,13 +921,23 @@ $( document ).ready(function() {
     grabLoot('#newloot2');
   });
 
-  // set up the patch cards for clicking
-  for (i=0;i<5;++i) {
-    $('#patch'+i).click(function() {
-      patch('#patch'+i);
-    });
-  }
-  
+  // set up the patch cards on the goPatch modal for clicking
+  $('#networkNode0').click(function() {
+    patch('#nodeToPatch0');
+  });
+  $('#networkNode1').click(function() {
+    patch('#nodeToPatch1');
+  });
+  $('#networkNode2').click(function() {
+    patch('#nodeToPatch2');
+  });
+  $('#networkNode3').click(function() {
+    patch('#nodeToPatch3');
+  });
+  $('#networkNode4').click(function() {
+    patch('#nodeToPatch4');
+  });
+  $('#goCheck').hide();
   // start the player off on the first move
   incrementMove();
 });
