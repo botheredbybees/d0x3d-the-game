@@ -146,20 +146,20 @@ players = [player1]; // only one player for now
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 function hidemodals() {
-	// hide all the modals
-	$('#dropLo0t').modal('hide');
-	$('#lo0t').modal('hide');
-	$('#pickupLo0t').modal('hide');
-	$('#assetRecovered').modal('hide');
-	$('#patchPhase').modal('hide');
-	$('#discardLo0t').modal('hide');
-	//$('#').modal('hide');
+  // hide all the modals
+  $('#dropLo0t').modal('hide');
+  $('#lo0t').modal('hide');
+  $('#pickupLo0t').modal('hide');
+  $('#assetRecovered').modal('hide');
+  $('#patchPhase').modal('hide');
+  $('#discardLo0t').modal('hide');
+  //$('#').modal('hide');
 }
 function showpatch() {
-	$('#goPatch').hide();
-	$('#patchComments').html('');
-	hidemodals();
-	$('#patchPhase').modal('show');
+  $('#goPatch').hide();
+  $('#patchComments').html('');
+  hidemodals();
+  $('#patchPhase').modal('show');
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -335,10 +335,10 @@ function movePlayer(x,y) {
   var tileplayers = network[players[currentplayer].currentNode].players;
   var newlist = [];
   for (var i=0; i< tileplayers.length; ++i) {
-  	if (tileplayers[i].name != players[currentplayer].name) {
-  		newlist.push(tileplayers[i]);
-  	}
-  	network[players[currentplayer].currentNode].players = newlist.slice(0);
+    if (tileplayers[i].name != players[currentplayer].name) {
+      newlist.push(tileplayers[i]);
+    }
+    network[players[currentplayer].currentNode].players = newlist.slice(0);
   }
   players[currentplayer].currentNode = board[y][x];
   // add this player to the node for tracking
@@ -685,40 +685,40 @@ function patch(wherefrom) {
   $(wherefrom).attr('src','images/tiles/'+patchnode.image+'.png').fadeIn(1000);
   // find the matching network node
   for (var i =0; i<network.length;++i) {
-  	if(network[i].name == patchnode.name) {
-  		// we have a match
-  		patchcount += 1;
-  		if (network[i].lo0t.length>0){
-  			// remove lo0t cards from the target node
-  			patchcomment += '<br>Removed '+network[i].lo0t.length+' digital asset tokens';
-				for(var j=0; j<network[i].lo0t.length; ++j) {
-					lo0tDiscards.push(network[i].lo0t[j]);
-				}
-				network[i].lo0t = [];
-  		}
-  		if (network[i].compromised) {
-  			if (network[i].players.length>0) {
-  			  // TODO get any players on the node to move - if they cannot the game has been lost (show loosing modal with a 'replay' option).
-  				// decommission the node
-  				patchcomment += '<br><span class="red">Intrusion detected!</span> Taking '+patchnode.name+' offline';
-  				network.splice(i, 1);
-  			} else {
-  				// no players on the node, reset to uncompromised
-	  			patchcomment += '<br>Restoring node to an uncompromised state';
-	  			$('#tile'+network[i].y+network[i].x).find('.nodeimg').attr('src','images/tiles/'+network[i].image+'.png');
-	  			network[i].compromised = false;
-	  		}
-  		}
-  		if (patchcomment == '') {
-  			patchcomment = '<br>Nothing found';
-  		}
-  		$('#patchComments').html($('#patchComments').html()+'<br><strong>Patching '+patchnode.name+'</strong>'+patchcomment);
-  		// TODO add patchcard to discard pile if the node was not removed
-  	}
+    if(network[i].name == patchnode.name) {
+      // we have a match
+      patchcount += 1;
+      if (network[i].lo0t.length>0){
+        // remove lo0t cards from the target node
+        patchcomment += '<br>Removed '+network[i].lo0t.length+' digital asset tokens';
+        for(var j=0; j<network[i].lo0t.length; ++j) {
+          lo0tDiscards.push(network[i].lo0t[j]);
+        }
+        network[i].lo0t = [];
+      }
+      if (network[i].compromised) {
+        if (network[i].players.length>0) {
+          // TODO get any players on the node to move - if they cannot the game has been lost (show loosing modal with a 'replay' option).
+          // decommission the node
+          patchcomment += '<br><span class="red">Intrusion detected!</span> Taking '+patchnode.name+' offline';
+          network.splice(i, 1);
+        } else {
+          // no players on the node, reset to uncompromised
+          patchcomment += '<br>Restoring node to an uncompromised state';
+          $('#tile'+network[i].y+network[i].x).find('.nodeimg').attr('src','images/tiles/'+network[i].image+'.png');
+          network[i].compromised = false;
+        }
+      }
+      if (patchcomment == '') {
+        patchcomment = '<br>Nothing found';
+      }
+      $('#patchComments').html($('#patchComments').html()+'<br><strong>Patching '+patchnode.name+'</strong>'+patchcomment);
+      // TODO add patchcard to discard pile if the node was not removed
+    }
   }
   if(infoconLevel == patchcount) {
-  	// we've finished patching
-  	$('#goCheck').show();
+    // we've finished patching
+    $('#goCheck').show();
   }
  
 }
@@ -732,17 +732,37 @@ function patch(wherefrom) {
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 function check() {
-	$('#goCheck').hide();
-	if(players[currentplayer].lo0t.length > 5) {
-  	hidemodals();
+  $('#goCheck').hide();
+  if(players[currentplayer].lo0t.length > 5) {
+    hidemodals();
     $('#discardLo0t').modal('show');
     // TODO create routines for discarding extra lo0t
+    showExtraLoot();
   } else {
-  	// move on to the next round. Get the player's next move
-  	hidemodals();
+    // move on to the next round. Get the player's next move
+    hidemodals();
   }
 }
-
+function showExtraLoot() {
+  players[currentplayer].lo0t.sort();
+  var lo0t = players[currentplayer].lo0t;
+  $('[id^=p'+(currentplayer+1)+'loot]').html('');  
+  for(var j=0;j<lo0t.length;++j) {
+    // on the modal
+    $('#discard_loot'+j).html('<img src="images/lo0t/lo0t.'+lo0t[j]+'.png" id="playerlootimg'+j+'" class="img-responsive" onclick="discard(\''+lo0t[j]+'\',\'#playerlootimg'+j+'\');" alt="'+lo0t[j]+'">');
+  }
+}
+function discard(lootname,from) {
+  $(from).fadeOut(1000);
+  var found = false;
+  for(var i=0; i<players[currentplayer].lo0t.length;++i) {
+    if(players[currentplayer].lo0t[i] == lootname && found==false){
+      players[currentplayer].lo0t.splice(i, 1);
+      found = true;
+    }
+  }
+  // TODO remove from the main display too
+}
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////
