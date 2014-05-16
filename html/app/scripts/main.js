@@ -480,7 +480,7 @@ function pickupAsset(targetnode, lootnum) {
 	players[currentplayer].lo0t.push(loot);
 	// remove loot from the node
 	network[targetnode].lo0t.splice(lootnum, 1);
-	if (network[targetnode].lo0t.length < 1) {
+	if (network[targetnode].lo0t.length < 1) { // TODO change this back to 4 when going into production
 		// we've got no more loot to grab, so hide the 'pick up loot' menu option
 		$('button.pickup').css('display','none');
 	} 
