@@ -230,10 +230,6 @@ overflow: hidden;
     right: 7%;
     float: right;
 }
-#goPatch {
-    position: absolute;
-    bottom: 5px;
-}
 .newLootRow {
     min-height: 240px;
 }
@@ -248,4 +244,7 @@ overflow: hidden;
 .header {
     background-color: rgba(255,255,255,0.6);
     padding: 20px;
+}
+#assetRecoveredImg {
+    margin: auto;
 }

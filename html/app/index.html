@@ -1075,7 +1075,7 @@
                             <img src="images/backs/back_lo0t.png" id="newloot1" class="img-responsive" width="176" height="240" alt="lo0t card">
                         </div>
                         <div class="col-md-2">
-                            <button id="goPatch" class="btn btn-lg btn-success" data-dismiss="modal" data-target="#lo0t">OK</button>
+                            
                         </div>
                         <div class="col-md-4">
                             <img src="images/backs/back_lo0t.png" id="newloot2" class="img-responsive" width="176" height="240" alt="lo0t card">
@@ -1084,7 +1084,9 @@
                 </div>
 			  </div>
 			  <div class="modal-footer">
-				
+                <p class="text-center">
+				    <button id="goPatch" class="btn btn-xl btn-success" onclick="showpatch();">OK</button>
+                </p>
                 <div id="playerCards">
                     <div class="row">
                         <div class="col-md-2">
@@ -1248,7 +1250,7 @@
               </div>
               <div class="modal-body">
                 <div id="recoveryInfo" class="text-center">
-                    <p>
+                    <p class="text-center">
                     <img src="" id="assetRecoveredImg" width="120" height="120" class="asset img-responsive" alt="">
                     <br><br>Congratulations, you've recovered your <span id="recoveredAsset"></span>.
                     </p>
@@ -1261,7 +1263,88 @@
               </div>
             </div><!-- /.modal-content -->
           </div><!-- /.modal-dialog -->
-        </div><!-- / assetRecovered.modal -->             
+        </div><!-- / assetRecovered.modal -->
+
+        <div class="modal fade" id="patchPhase" data-backdrop="static" data-keyboard="false" data-show="false">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title"><span class="red">[</span>patching!<span class="red">]</span> Infocon level <span id="infoconlevel"></span></h1>
+              </div>
+              <div class="modal-body">
+                <div id="patchInstructions" class="text-center">
+                <p>Click a patch card to see the node the sys admin is working on</p>
+                </div>
+                <div id="networkNode">
+                    <div class="row">
+                        <div class="col-md-2 col-md-offset-2" id="networkNode3">
+                        </div>
+                        <div class="col-md-2" id="networkNode1">
+                        </div>
+                        <div class="col-md-2" id="networkNode0">
+                        </div>
+                        <div class="col-md-2" id="networkNode2">
+                        </div>
+                        <div class="col-md-2" id="networkNode4">
+                        </div>
+                    </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <p class="text-center">
+                    <button id="goCheck" class="btn btn-xl btn-success" onclick="check();">OK</button>
+                </p>
+                <div id="patchComments"></div>
+              </div>
+            </div><!-- /.modal-content -->
+          </div><!-- /.modal-dialog -->
+        </div><!-- / goPatch.modal --> 
+
+        <div class="modal fade" id="discardLo0t" data-backdrop="static" data-keyboard="false" data-show="false">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title"> Discard <span class="red">[</span>lo0t!<span class="red">]</span></h1>
+              </div>
+              <div class="modal-body">
+                <div id="discardlootInstructions" class="text-center">
+                <p>You have too much lo0t. Click on a lo0t <span id="lootCount"></span>
+                    </p>
+                </div>
+                <div id="tooMuchLoot">
+                    <div class="row">
+                        <div class="col-md-2">
+                            <h2>Your lo0t:</h2> 
+                            </div>
+                            <div class="col-md-2" id="discard_loot0">
+                            </div>
+                            <div class="col-md-2" id="discard_loot1">
+                            </div>
+                            <div class="col-md-2" id="discard_loot2">
+                            </div>
+                            <div class="col-md-2" id="discard_loot3">
+                            </div>
+                            <div class="col-md-2" id="discard_loot4">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-2 col-md-offset-2" id="discard_loot5">
+                            </div>
+                            <div class="col-md-2" id="discard_loot6">
+                            </div>
+                            <div class="col-md-2" id="discard_loot7">
+                            </div>
+                            <div class="col-md-2" id="discard_loot8">
+                            </div>
+                            <div class="col-md-2" id="discard_loot9">
+                        </div>
+                    </div>
+                </div>
+              </div>
+            </div><!-- /.modal-content -->
+          </div><!-- /.modal-dialog -->
+        </div><!-- / discardLo0t.modal -->
+
 
 
         <!-- build:js scripts/vendor.js -->
