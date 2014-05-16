@@ -185,6 +185,7 @@ function decrementMove() {
 }
 function activateTile(id) {
   // enable the slide up menu for a tile
+  // TODO check that this node has not been removed from the game
   $('#'+id).parent().hover(
     function () {
       $(this).find('.tile-detail').stop().animate({bottom:0}, 500, 'easeOutCubic');
@@ -641,7 +642,6 @@ function grabLoot(wherefrom) {
     patchcount = 0;
     $('#goPatch').show();
     // TODO check to see if we need to display the 'retrieve' button
-    // TODO add code for initiating the next phase of play: patch
   }
 }
 function showPlayerLoot() {
@@ -698,15 +698,24 @@ function patch(wherefrom) {
       }
       if (network[i].compromised) {
         if (network[i].players.length>0) {
-          // TODO get any players on the node to move - if they cannot the game has been lost (show loosing modal with a 'replay' option).
+          // TODO check where players on the node can move - if they cannot the game has been lost (show loosing modal with a 'replay' option).
+          // if they can, restrict the next move to a 'move' only
           // decommission the node
-          patchcomment += '<br><span class="red">Intrusion detected!</span> Taking '+patchnode.name+' offline';
+          // TODO check that this is not the internet gateway (if it is, the game has been lost)
+          patchcomment += '<br><span class="red">Intrusion detected!</span> Taking '+patchnode.name+' offline for forensic analysis';
           network.splice(i, 1);
+          $('#tile'+network[i].y+network[i].x).find('.nodeimg').hide();
+          $('#'+network[i].y+network[i].x+' button').css('display','none');
+          // TODO reset menus on surrounding tiles if needed
+          //showPlayer(playernum,xpos,ypos);
         } else {
           // no players on the node, reset to uncompromised
           patchcomment += '<br>Restoring node to an uncompromised state';
           $('#tile'+network[i].y+network[i].x).find('.nodeimg').attr('src','images/tiles/'+network[i].image+'.png');
           network[i].compromised = false;
+          $('#'+network[i].y+network[i].x+' button.move').css('display','none');
+          // TODO change the menu options so players cannot move here but can re-compromise the node
+          //showPlayer(playernum,xpos,ypos);
         }
       }
       if (patchcomment == '') {
@@ -727,7 +736,7 @@ function patch(wherefrom) {
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 // 
-// PLAY Phase IV -  check
+// PLAY Phase IV -  check - remove current player's lo0t cards until they only hold 5
 //
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -746,6 +755,13 @@ function check() {
 function showExtraLoot() {
   players[currentplayer].lo0t.sort();
   var lo0t = players[currentplayer].lo0t;
+  var instructions;
+  if (lo0t.length > 6) {
+    instructions = 'Click on '+(lo0t.length-5)+' cards to discard them';
+  } else { // we only have one extra card
+    instructions = 'Click on a lo0t card to discard it';
+  }
+  $('#lootCount').text(instructions);
   $('[id^=p'+(currentplayer+1)+'loot]').html('');  
   for(var j=0;j<lo0t.length;++j) {
     // on the modal
@@ -761,7 +777,25 @@ function discard(lootname,from) {
       found = true;
     }
   }
-  // TODO remove from the main display too
+  // update the current player hand on the main screen
+  $('[id^=p'+(currentplayer+1)+'loot]').html('');
+  players[currentplayer].lo0t.sort();
+  var lo0t = players[currentplayer].lo0t;
+  for(j=0;j<lo0t.length;++j) {
+    $('#p'+(currentplayer+1)+'loot'+j).html('<img src="images/lo0t/lo0t.'+lo0t[j]+'.png" class="img-responsive" alt="'+lo0t[j]+'" >');
+  }
+  // update screen feedback  
+  var instructions;
+  if (lo0t.length > 6) {
+    instructions = 'Click on '+(lo0t.length-5)+' cards to discard them';
+  } else { // we only have one extra card
+    instructions = 'Click on a lo0t card to discard it';
+  }
+  $('#lootCount').text(instructions);
+  if (players[currentplayer].lo0t.length <= 5) {
+    // move on to the next round. Get the player's next move
+    hidemodals();
+  }
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////
