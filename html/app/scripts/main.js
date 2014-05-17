@@ -708,6 +708,7 @@ function patch(wherefrom) {
           $('#'+network[i].y+network[i].x+' button').css('display','none');
           // TODO reset menus on surrounding tiles if needed
           //showPlayer(playernum,xpos,ypos);
+          // TODO set players[playernum].currentNode to -1
         } else {
           // no players on the node, reset to uncompromised
           patchcomment += '<br>Restoring node to an uncompromised state';
